@@ -2,7 +2,7 @@
 
 import pygame
 
-FONT = "comicsansms"        # !!! wo wyjebania
+FONT = "comicsansms"
 
 """
 class            Button:

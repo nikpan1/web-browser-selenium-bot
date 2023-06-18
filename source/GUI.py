@@ -1,5 +1,6 @@
 # GUI
 
+import os
 import pygame
 
 from ButtonClass import Button
@@ -14,7 +15,6 @@ class GUI:
     def __init__(self):
         pygame.init()
         WINDOW_WIDTH, WINDOW_HEIGHT = 800, 500
-
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         pygame.display.set_caption('Pokewars bot')
         icon_img = pygame.image.load('images/app_icon.png')

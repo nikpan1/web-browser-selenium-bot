@@ -13,24 +13,25 @@ from StatementsClass import Statements
 from PokeballsClass import Throw
 from QuestClass import Elm  #
 
+import logging, logging.config
+
 
 def wait(a, b):
-    t = random.randint(a * 10, b * 10)
-    print(f'wait({a}, {b}) = {t} * 0.1 = {t*0.1}')
-    for p in range(0, t):
-        gui.keyboard_interaction()
-        time.sleep(0.1)        # może za mało
+    gui.keyboard_interaction()
+    time.sleep(0.1)
 
 
 def random_wait():
-    if random.randint(1, 13) in [1, 2, 3]:
-        print("Not too fast...[random_wait()]")
-        wait(0, random.randint(1, 4) + 1)
+    pass
 
 
 class Schedule:
     def __init__(self):
+        LOGGER = logging.getLogger(__name__)
+        LOGGER.debug("TESTOWA INFORMACJA")
+
         POKEWARS = "https://pokewars.pl"
+        options = webdriver.ChromeOptions()
         PATH = "C:/Program Files (x86)/chromedriver.exe"
         self.driver = webdriver.Chrome(PATH)
         self.driver.get(POKEWARS)
@@ -50,16 +51,25 @@ class Schedule:
         gui.login_interaction()
         log, password = gui.return_inputs()
 
+        if len(log) < 2:  # @TODO do zmiany
+            import configparser
+            config = configparser.ConfigParser()
+            config.read("config/config.ini")
+            log = config["LOGGING_IN"]["LOGIN"]
+            password = config["LOGGING_IN"]["PASSWORD"]
+
         search = self.driver.find_element(By.NAME, "login")
         search.send_keys(log)
+
         search = self.driver.find_element(By.NAME, "pass")
         search.send_keys(password)
+
         search.send_keys(Keys.RETURN)
 
     def screenshot(self):
         x = datetime.datetime.now()
         file_name = x.strftime("%b-%d_%HH%MM%SS")
-        self.driver.save_screenshot("SCREENSHOTS/" + file_name + ".png")
+        self.driver.save_screenshot(f"SCREENSHOTS/{file_name}.png")
 
         """
         passy do konta:
@@ -67,14 +77,20 @@ class Schedule:
         nikodemtoszefunciudobraes
         haslo_do_alta
         """
+
     #
     def heal_all(self):
         try:
-            search = self.driver.find_element(By.XPATH, "//img[@title='Wylecz wszystkie Pokemony']")
-            search.click()
+            search1 = self.driver.find_element(By.XPATH, "//img[@title='Wylecz wszystkie Pokemony']")
+            search1.click()
         except:
             print("Error: heal_all()")
-
+        try:
+            search2 = self.driver.find_element(By.XPATH, "//div[@class='vex-dialog-form']")
+            search1.click()
+        except:
+            print("wyleczono pokemony bez przeszkod")
+            pass
     #
     def sell_all(self):
         try:
@@ -109,19 +125,19 @@ class Schedule:
     #
     def catch_pokemon(self):
         wait(0.1, 0.3)
-        self.pb.netball()
+        self.pb.throw("Netball")
 
         wait(0, 0.2)
-        self.pb.levelball()
+        self.pb.throw("Levelball")
 
     #
     def catch_shiny(self):
         wait(0.1, 0.55)
-        self.pb.netball()
+        self.pb.throw("Netball")
 
         catched = True
         while not catched:
-            if self.pb.repeatball():
+            if self.pb.throw("Repeatball"):
                 catched = False
 
     #
@@ -129,11 +145,11 @@ class Schedule:
         wait(0, 1)
 
         try:
-            cth = self.driver.find_element(By.XPATH, "//form[@name='" + self.poke_id + "']")
+            cth = self.driver.find_element(By.XPATH, f"//form[@name='{self.poke_id}']")
             cth.click()
         except:
             self.heal_all()
-            cth = self.driver.find_element(By.XPATH, "//form[@name='" + self.poke_id + "']")
+            cth = self.driver.find_element(By.XPATH, f"//form[@name='{self.poke_id}']")
             cth.click()
             print("Error: pokemon fight_pokemon().")
 
@@ -148,7 +164,7 @@ class Schedule:
     #
     def hunt(self):
         try:
-            poluj = self.driver.find_element(By.XPATH, "//img[@src='img/lokacje/s/" + self.where_hunt + ".jpg']")
+            poluj = self.driver.find_element(By.XPATH, f"//img[@src='img/lokacje/s/{self.where_hunt}.jpg']")
             poluj.click()
         except:
             print("Error: hunt()")
@@ -167,6 +183,7 @@ class Schedule:
     #
     def other_events(self):
         if self.st.is_trainer():
+            time.sleep(14)
             self.heal_all()
             pass
         elif self.st.is_end_pa():
