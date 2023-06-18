@@ -1,0 +1,98 @@
+# NOTATNIK
+- żeby przycisk typu heal działały mimo wszystko w trakcie
+- start/stop żeby napis się zmieniał
+- image button class w osobnym pliku?
+
+- posprzątać kod
+- może jeżeli stop to nie używaj wait
+
+Healownie/hunt:
+- żeby nie zatrzymywało w wypadku gdy main champion nie ma hp
+- naprawić healowanie
+- jeżeli nie możesz zaatakować wybranym pokemonem to wybierz kolejny ez
+
+GUI:
+- przycisk co zaznaczasz by zadanie się zatrzymało po zrobieniu elma
+- LEDy na shiny/tm.
+- zeby był przycisk resetu lokacji
+- przy TM nie zmienił się przycisk start/stop
+- pole do wpisywania a.pokemonów przy których ma się zatrzymać, b.login i pass
+- guiclass ostatnia funkcja sus
+- ss nie działają
+- automatyzacja elma
+
+pandas
+Trzeba by ogarnąć pandas by móc zapisywać postęp i
+zapisywać rodzaje zadań możliwych u elma
+
+możliwość robienia screenshotów i wysyłania ich na dc?
+zautomatyzować - użytkownik wybiera czy program ma czekać w tych momentach
+
+
+________________________________________________________________________________________
+
+USUNĄLem
+try exception z uzycia pokeballi w funkcjach catch
+
+
+
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+
+LOGIN = "nikodem382"
+PASSWORD = "Carpediem1229"
+pokewars = "https://pokewars.pl"
+PATH = "C:\Program Files (x86)\chromedriver.exe"
+
+driver = webdriver.Chrome(PATH)
+driver.get(pokewars)
+
+search = driver.find_element(By.NAME, "login")
+search.send_keys(LOGIN)
+search = driver.find_element(By.NAME, "pass")
+search.send_keys(PASSWORD)
+search.send_keys(Keys.RETURN)
+
+#____________________
+def find_locations(self):
+    lokacje = []
+    lok = []
+    poluj = driver.find_elements(By.XPATH, "//img[contains(@src, 'img/lokacje/s/')]")
+    for elem in poluj:
+        # print(i.get_attribute('src'))
+        source = elem.get_attribute('src').split('/')
+        lokacje.append(source[6])
+
+    for loc in lokacje:
+        a_loc = str(loc).replace("%20", " ")
+        b_loc = str(a_loc).replace(".jpg", "")
+        lok.append(b_loc)
+
+    return lok
+
+
+# dwie powyższe opcje nie działają
+# ma usuwać %20 oraz .jpg
+
+"""
+print(lokacje)
+
+try:
+    elm = driver.find_element(By.XPATH, "//div[@title='Zadanie codzienne']")
+    elm.click()
+except:
+    print("Nie można nadusić elma.")
+    # take new elm()
+
+zad_tab = []
+zadanie_codzienne = driver.find_elements(By.XPATH, "//div[contains(@class, 'action-to-choose')]")
+print(zadanie_codzienne)
+for elem in zadanie_codzienne:
+    src1 = elem.get_attribute('onclick').split('(')
+    src2 = elem.get_attribute('onclick').split(')')
+    zad_tab.append(elem.text)
+
+print(zad_tab)
+"""
+
