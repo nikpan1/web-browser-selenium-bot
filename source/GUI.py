@@ -11,6 +11,8 @@ from ButtonClass import Progressbar
 from Colors import Colors
 
 
+# @TODO remake GUI and pygame to TKINTER/QT
+
 class GUI:
     def __init__(self):
         pygame.init()
@@ -204,7 +206,7 @@ class GUI:
                     pygame.quit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
-                    print(pos)
+                    #print(pos)
                     if self.input_box1.is_interaction(pos):
                         self.input_box1.click()
                     else:

@@ -1,6 +1,5 @@
 # MAIN
 
-import random
 import time
 import datetime
 
@@ -14,15 +13,17 @@ from PokeballsClass import Throw
 from QuestClass import Elm  #
 
 import logging, logging.config
-
+# @TODO remake logging system
+# @TODO zrobić counter znalezionych itemów/złapanych pokemonów
+# @TODO elm quests handling
+# @TODO default settings
+# @TODO filtrowanie rezerwy
+# @TODO przed sprzedażą niech wszystkich ewo
+# @TODO skip found egg
 
 def wait(a, b):
     gui.keyboard_interaction()
     time.sleep(0.1)
-
-
-def random_wait():
-    pass
 
 
 class Schedule:
@@ -91,6 +92,7 @@ class Schedule:
         except:
             print("wyleczono pokemony bez przeszkod")
             pass
+
     #
     def sell_all(self):
         try:
@@ -119,61 +121,54 @@ class Schedule:
     def rezerwa_info(self):
         amount = self.driver.find_element(By.XPATH, "//span[@class='rezerwa-count']")
         percentage = int(amount.text)/30
-        print(percentage)
         gui.rezerwa_bar.change_percent(percentage)
 
     #
     def catch_pokemon(self):
-        wait(0.1, 0.3)
         self.pb.throw("Netball")
-
-        wait(0, 0.2)
         self.pb.throw("Levelball")
 
     #
     def catch_shiny(self):
-        wait(0.1, 0.55)
         self.pb.throw("Netball")
 
         catched = True
-        while not catched:
+        while not catched:              # @TODO error
             if self.pb.throw("Repeatball"):
                 catched = False
 
     #
     def fight_pokemon(self):
-        wait(0, 1)
-
         try:
+            # attack with the choosen pokemon
             cth = self.driver.find_element(By.XPATH, f"//form[@name='{self.poke_id}']")
             cth.click()
         except:
+            # if not possible, heal all and press again
             self.heal_all()
             cth = self.driver.find_element(By.XPATH, f"//form[@name='{self.poke_id}']")
             cth.click()
-            print("Error: pokemon fight_pokemon().")
-
-        wait(0, 1)
 
         try:
             cth = self.driver.find_element(By.XPATH, "//a[@href='#wynik_walki']")
             cth.click()
         except:
+            # is it even possible ?
             print("Error: wyniki_walki, fight_pokemon()")
 
     #
     def hunt(self):
         try:
+            # click the picked location button
             poluj = self.driver.find_element(By.XPATH, f"//img[@src='img/lokacje/s/{self.where_hunt}.jpg']")
             poluj.click()
         except:
-            print("Error: hunt()")
+            # locations need to be refreshed    @TODO handle it
             gui.user_reaction()
 
     #
     def pokemon_events(self):
-     #  if self.st.if_this_pokemon("..."):
-        if self.st.is_shiny():
+        if self.st.is_shiny() or self.st.is_on_whitelist():
             gui.user_reaction()
         else:
             self.fight_pokemon()
@@ -183,14 +178,15 @@ class Schedule:
     #
     def other_events(self):
         if self.st.is_trainer():
-            time.sleep(14)
-            self.heal_all()
+            self.heal_all()     # for now it's okay if the first pokemon in the team is weak
+                                # although @TODO make a handle popup window "everyone is healed"
             pass
-        elif self.st.is_end_pa():
+
+        if self.st.is_end_pa():
             self.drink_oak()
 
         if self.st.is_tm() or self.st.is_porosnieta_ska() \
-                or self.st.is_pole_magne() or self.st.if_is_alola():
+                or self.st.is_pole_magne() or self.st.if_is_alola():        # @TODO make a whitelist for items, this is not working currectly I think
             gui.user_reaction()
 
     #
@@ -202,7 +198,7 @@ class Schedule:
             self.hunt()
             if self.st.is_pokemon():
                 self.team = self.elm.find_team()
-                self.poke_id = self.team[2]
+                self.poke_id = self.team[2]  # ?
 
                 gui.recreate_buttons(self.loc, self.team)
                 gui.stop()
@@ -219,8 +215,6 @@ class Schedule:
             self.poke_id = gui.team.return_now_picked_loc()
 
         elif not gui.pause:
-            random_wait()
-
             self.rezerwa_info()
             if self.st.is_full():
                 gui.user_reaction()
@@ -229,7 +223,7 @@ class Schedule:
 
             if self.st.is_pokemon():
                 self.pokemon_events()
-            elif not self.st.is_pokemon():
+            else:       # why? if not self.st.is_pokemon():
                 self.other_events()
 
     #

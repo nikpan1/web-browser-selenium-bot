@@ -44,6 +44,20 @@ class Statements:
             pass
         return False
 
+    def is_on_whitelist(self):
+        try:
+            search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
+        except:
+            pass
+
+        with open("config/whitelist", 'r') as file:     # @TODO read the whitelist once
+            pokemon_name = file.readline()
+            search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
+            if pokemon_name in search.text:
+                return True
+
+        return False
+
     def is_trainer(self):
         try:
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
