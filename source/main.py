@@ -42,7 +42,7 @@ class Schedule:
         self.elm = Elm(self.driver)
 
         self.where_hunt = None
-        self.poke_id = None
+        self.poke_id = 4
 
         self.loc = []
         self.team = []
@@ -67,6 +67,7 @@ class Schedule:
 
         search.send_keys(Keys.RETURN)
 
+
     def screenshot(self):
         x = datetime.datetime.now()
         file_name = x.strftime("%b-%d_%HH%MM%SS")
@@ -87,11 +88,11 @@ class Schedule:
         except:
             print("Error: heal_all()")
         try:
-            search2 = self.driver.find_element(By.XPATH, "//div[@class='vex-dialog-form']")
-            search1.click()
+            time.sleep(1)
+            search = self.driver.find_element(By.XPATH, "//button[@class='vex-dialog-button-primary vex-dialog-button vex-first']")
+            search.click()
         except:
-            print("wyleczono pokemony bez przeszkod")
-            pass
+            print("Error: submit heal ok()")
 
     #
     def sell_all(self):
@@ -100,8 +101,8 @@ class Schedule:
             search.click()
 
             try:
-                wait(0, 1)
-                search = self.driver.find_element(By.XPATH, "//button[@type='submit']")
+                time.sleep(1)
+                search = self.driver.find_element(By.XPATH, "//button[@class='vex-dialog-button-primary vex-dialog-button vex-first']")
                 search.click()
             except:
                 print("Error: submit sell_rezerwa()")
@@ -193,9 +194,21 @@ class Schedule:
     def manage_elm(self):
         self.loc = self.elm.find_locations()
         self.where_hunt = self.loc[0]
+        self.elm.open_elm_bar()
+
+        old_elm_progress = None
 
         while True:
             self.hunt()
+            elm_progress = self.elm.get_progress()
+
+            gui.elm_bar.change_percent(elm_progress)
+            if old_elm_progress != elm_progress and old_elm_progress is not None:
+                gui.user_reaction()
+            else:
+                old_elm_progress = elm_progress
+
+
             if self.st.is_pokemon():
                 self.team = self.elm.find_team()
                 self.poke_id = self.team[2]  # ?
@@ -217,7 +230,7 @@ class Schedule:
         elif not gui.pause:
             self.rezerwa_info()
             if self.st.is_full():
-                gui.user_reaction()
+                self.sell_all()
 
             self.hunt()
 

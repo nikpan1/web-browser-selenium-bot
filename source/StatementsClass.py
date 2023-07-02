@@ -29,8 +29,8 @@ class Statements:
     def is_pokemon(self):
         try:
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
-            if "dzikiego" in search.text:
-                print(search.text.split(" ")[-1])
+            #if "dzikiego" in search.text:
+                #print(search.text.split(" ")[-1])
             return "dzikiego" in search.text
         except:
             pass

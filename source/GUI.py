@@ -9,6 +9,7 @@ from ButtonClass import LED
 from ButtonClass import TextBar
 from ButtonClass import Progressbar
 from Colors import Colors
+from notification import *
 
 
 # @TODO remake GUI and pygame to TKINTER/QT
@@ -41,6 +42,7 @@ class GUI:
         self.st_rezerwa = font.render("Rezerwa: 13 / 30", True, self.cl.WHITE)
 
         self.rezerwa_bar = Progressbar(self.screen, 210, 300, 180, 40, self.cl.ORANGE, self.cl.WHITE, self.cl.GREEN, 0.5)
+        self.elm_bar = Progressbar(self.screen, 210, 300+50, 180, 40, self.cl.ORANGE, self.cl.WHITE, self.cl.GREEN, 0.5)
         #210, 260
         self.pause_button = Button(self.screen, 10, 110, 124, 40,
                                    unclicked_color=self.cl.BLUE_1,
@@ -190,6 +192,7 @@ class GUI:
         self.new_quest.draw()
 
         self.rezerwa_bar.draw()
+        self.elm_bar.draw()
 
         self.screen.blit(self.logo_img, (0, 0))
 
@@ -294,6 +297,7 @@ class GUI:
         print("Czekam na użytkownika.")
         self.stop()
         self.draw()     #
+        alert()
 
     def catching(self):
         return self.close
