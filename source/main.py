@@ -1,7 +1,11 @@
-# MAIN
+﻿# MAIN
 
 import time
 import datetime
+
+from selenium import webdriver
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from webdriver_manager.firefox import GeckoDriverManager 
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -32,9 +36,10 @@ class Schedule:
         LOGGER.debug("TESTOWA INFORMACJA")
 
         POKEWARS = "https://pokewars.pl"
+
         options = webdriver.ChromeOptions()
         PATH = "C:/Program Files (x86)/chromedriver.exe"
-        self.driver = webdriver.Chrome(PATH)
+        self.driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()))
         self.driver.get(POKEWARS)
 
         self.pb = Throw(self.driver)
