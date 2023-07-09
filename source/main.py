@@ -39,7 +39,11 @@ class Schedule:
 
         options = webdriver.ChromeOptions()
         PATH = "C:/Program Files (x86)/chromedriver.exe"
-        self.driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()))
+
+        options = webdriver.FirefoxOptions()
+        options.set_preference("permissions.default.image", 2)
+
+        self.driver = webdriver.Firefox(options=options, service=FirefoxService(GeckoDriverManager().install()))
         self.driver.get(POKEWARS)
 
         self.pb = Throw(self.driver)
@@ -263,8 +267,7 @@ class Schedule:
     #
     def run(self):
         self.login()
-        self.manage_elm()
-
+        time.sleep(5)
         #
         while gui.catching:
             gui.keyboard_interaction()
