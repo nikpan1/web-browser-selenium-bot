@@ -2,6 +2,8 @@
 
 import time
 import datetime
+import asyncio
+import os
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -27,7 +29,6 @@ class Schedule:
         POKEWARS = "https://pokewars.pl"
         self.FIGHT_POKEMON = 4
         self.FIGHT_LOCATION = 4
-        self.RUNNING = True
 
         options = webdriver.FirefoxOptions()
         options.add_argument('--disable-blink-features=AutomationControlled')
@@ -48,11 +49,56 @@ class Schedule:
 
         self.login()
 
+        self.usr_cmd = " "
+        self.rezerwa_count = 0
+        self.running = True
+        self.rezerwa_count = 0
+        self.elm = 0
 
-    def exception_break():
-        a = input();
+        self.login()
+        asyncio.run(self.main())
+
+    async def user_input(self):
+        while True:
+            self.usr_cmd = await asyncio.get_event_loop().run_in_executor(None, input, '> ')
+
+    async def terminal_stats(self):
+        while True:
+            self.clear_terminal()
+            await asyncio.sleep(3)
+     
+    async def bot_loop(self):
+        while self.running:
+            self.travel()
+            
+            # user command handle
+            # here
+
+    async def main(self):
+        await asyncio.gather(self.user_input(), self.terminal_stats(), self.bot_loop())
     
-    #
+    def clear_cmd_input(self):
+        self.usr_cmd = " "
+
+    def exception_break(self):
+        while not self.running:
+            pass
+
+    def clear_terminal(self):
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+        print("_____________________")
+        if self.running == True:
+            print(f'XXXXXX RUNNING XXXXXX')
+        else:
+            print(f'XXXXXX WAITING XXXXXX')
+        print("_____________________")       
+        print(f'\t elm = {self.elm}%')
+        print(f'\t rezerwa = {self.rezerwa_count}/30 \t')
+        print(f'-> {self.FIGHT_POKEMON} | {self.FIGHT_LOCATION}')
+        print(f"cmd={self.usr_cmd}")
+        print("_____________________")
+    
     def login(self):
         log = " "
         if len(log) < 2:  # @TODO do zmiany
@@ -71,10 +117,9 @@ class Schedule:
         search.send_keys(Keys.RETURN)
         time.sleep(1)
 
-
     def screenshot(self):
-        # @TODO screenshots
-
+        current_time = datetime.now().time()
+       self.driver.save_screenshot(f"screenshot{current_time}.png")
 
     def heal_all(self):
         try:
@@ -83,7 +128,7 @@ class Schedule:
         except:
             print("Error: heal_all()")
         try:
-            time.sleep(1)
+            time.sleep(3)
             search = self.driver.find_element(By.XPATH, "//button[@class='vex-dialog-button-primary vex-dialog-button vex-first']")
             search.click()
         except:
@@ -190,8 +235,7 @@ class Schedule:
 
     def travel(self):
         # if player pause ... update here
-
-        elif not gui.pause:
+        if True: #if not pause
             self.rezerwa_info()
             if self.st.is_full():
                 self.sell_all()
@@ -203,14 +247,8 @@ class Schedule:
             else:       # why? if not self.st.is_pokemon():
                 self.other_events()
 
-    def run(self):
-        while self.RUNNING:
-            self.travel()
-
 
 if __name__ == "__main__":
     bot = Schedule()
-    bot.run()
-
     exit(0)
 
