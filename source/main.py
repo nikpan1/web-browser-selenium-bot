@@ -47,40 +47,46 @@ class Schedule:
         self.loc = []
         self.team = []
 
-        self.login()
-
         self.usr_cmd = " "
         self.rezerwa_count = 0
-        self.running = True
-        self.rezerwa_count = 0
+        self.running = False
         self.elm = 0
 
         self.login()
         asyncio.run(self.main())
+            
+    async def main(self):
+        await asyncio.gather(self.terminal_stats(), self.bot_loop())
+ 
+    def user_input(self):
+        if len(self.usr_cmd) > 1:
+            return
+        if self.usr_cmd == "stop":
+            self.running = False
+        if self.usr_cmd == "start":
+            self.running = True 
+            
+            arguments = self.usr_cmd.split()
+            if len(arguments) == 2:
+                self.FIGHT_POKEMON = int(arguments[0])
+                self.FIGHT_LOCATION = int(arguments[1])
 
-    async def user_input(self):
-        while True:
-            self.usr_cmd = await asyncio.get_event_loop().run_in_executor(None, input, '> ')
+            self.usr_cmd = " "
 
     async def terminal_stats(self):
         while True:
             self.clear_terminal()
-            await asyncio.sleep(3)
+            self.user_input()
+            self.usr_cmd = await asyncio.get_event_loop().run_in_executor(None, input, '> ')
+#await asyncio.sleep(3)
      
     async def bot_loop(self):
-        while self.running:
-            self.travel()
-            
-            # user command handle
-            # here
-
-    async def main(self):
-        await asyncio.gather(self.user_input(), self.terminal_stats(), self.bot_loop())
-    
-    def clear_cmd_input(self):
-        self.usr_cmd = " "
-
+        while True:
+            while self.running:
+                self.travel()
+   
     def exception_break(self):
+        self.running = False
         while not self.running:
             pass
 
@@ -93,9 +99,9 @@ class Schedule:
         else:
             print(f'XXXXXX WAITING XXXXXX')
         print("_____________________")       
-        print(f'\t elm = {self.elm}%')
-        print(f'\t rezerwa = {self.rezerwa_count}/30 \t')
-        print(f'-> {self.FIGHT_POKEMON} | {self.FIGHT_LOCATION}')
+        print(f'  elm = {self.elm}%')
+        print(f'  rezerwa = {self.rezerwa_count}%')
+        print(f'  {self.FIGHT_POKEMON} | {self.FIGHT_LOCATION}')
         print(f"cmd={self.usr_cmd}")
         print("_____________________")
     
@@ -119,7 +125,7 @@ class Schedule:
 
     def screenshot(self):
         current_time = datetime.now().time()
-       self.driver.save_screenshot(f"screenshot{current_time}.png")
+        self.driver.save_screenshot(f"screenshot{current_time}.png")
 
     def heal_all(self):
         try:
@@ -157,7 +163,7 @@ class Schedule:
 
     def rezerwa_info(self):
         amount = self.driver.find_element(By.XPATH, "//span[@class='rezerwa-count']")
-        self.rezerwa_percentage = int(amount.text)/30
+        self.rezerwa_percentage = 100 * int(amount.text)/30
 
     def catch_pokemon(self):
         self.pb.throw("Netball")
@@ -186,7 +192,7 @@ class Schedule:
             # click the picked location button
             hunt_location = self.loc[self.FIGHT_LOCATION]
             
-            poluj = self.driver.find_element(By.XPATH, f"//img[@src='img/lokacje/s/{hunt_location}.jpg']")
+            poluj = self.driver.find_element(By.XPATH, f"//img[@src='img/lokacje/s/{self.FIGHT_LOCATION}.jpg']")
             poluj.click()
         except:
             # locations need to be refreshed    @TODO handle it
@@ -194,7 +200,8 @@ class Schedule:
     
     def pokemon_events(self):
         if self.st.is_shiny() or self.st.is_on_whitelist():
-            exception_break()
+            self.running = False
+            time.sleep(10)
         else:
             self.fight_pokemon()
             self.catch_pokemon()
@@ -234,21 +241,20 @@ class Schedule:
                 self.other_events()
 
     def travel(self):
-        # if player pause ... update here
-        if True: #if not pause
-            self.rezerwa_info()
-            if self.st.is_full():
-                self.sell_all()
+        self.rezerwa_info()
+        if self.st.is_full():
+            self.sell_all()
 
-            self.hunt()
+        self.hunt()
 
-            if self.st.is_pokemon():
-                self.pokemon_events()
-            else:       # why? if not self.st.is_pokemon():
-                self.other_events()
+        if self.st.is_pokemon():
+            self.pokemon_events()
+        else:       # why? if not self.st.is_pokemon():
+            self.other_events()
 
 
 if __name__ == "__main__":
     bot = Schedule()
     exit(0)
+
 
