@@ -22,6 +22,8 @@ from QuestClass import Elm  #
 # @TODO filtrowanie rezerwy
 # @TODO przed sprzedażą niech wszystkich ewo
 # @TODO skip found egg
+# z poziomu drivera przybliżenie ekranu na 60%?
+
 
 class Schedule:
     def __init__(self):
@@ -35,7 +37,6 @@ class Schedule:
 
         if LOAD_IMAGES:
             options.set_preference("permissions.default.image", 2)
-
 
         self.driver = webdriver.Firefox(options=options, service=FirefoxService(GeckoDriverManager().install()))
         self.driver.get(POKEWARS)
@@ -132,6 +133,8 @@ class Schedule:
         current_time = datetime.now().time()
         self.driver.save_screenshot(f"screenshot{current_time}.png")
 
+#-------------------
+
     def heal_all(self):
         try:
             search1 = self.driver.find_element(By.XPATH, "//img[@title='Wylecz wszystkie Pokemony']")
@@ -145,7 +148,6 @@ class Schedule:
         except:
             print("Error: submit heal ok()")
 
-    #
     def sell_all(self):
         try:
             search = self.driver.find_element(By.XPATH, "//input[@title='Sprzedaj wszystkie pokemony']")
@@ -161,7 +163,6 @@ class Schedule:
         except:
             print("Error: sell_rezerwa()")
 
-    #
     def drink_oak(self):
         search = self.driver.find_element(By.XPATH, "//img[@title='Wypij Napój Profesora Oaka']")
         search.click()
@@ -169,6 +170,9 @@ class Schedule:
     def rezerwa_info(self):
         amount = self.driver.find_element(By.XPATH, "//span[@class='rezerwa-count']")
         self.rezerwa_percentage = 100 * int(amount.text)/30
+    rezerwa self.rezerwa_percentage
+
+# -----------
 
     def catch_pokemon(self):
         self.pb.throw("Netball")
@@ -209,7 +213,6 @@ class Schedule:
         else:
             self.fight_pokemon()
             self.catch_pokemon()
-            # z poziomu drivera przybliżenie na 60%?
             self.st.have_item()
 
     def other_events(self):
@@ -224,15 +227,15 @@ class Schedule:
 # dwie pierwsze funkcje dać osobno by tylko raz się odpaliły 
 
     def travel(self):
-        self.rezerwa_info()
-        if self.st.is_full():
+        self.manage_elm()
+        if self.rezerwa_info() > 80:#%
             self.sell_all()
 
         self.hunt()
 
         if self.st.is_pokemon():
             self.pokemon_events()
-        else:       # why? if not self.st.is_pokemon():
+        else:
             self.other_events()
 
 
