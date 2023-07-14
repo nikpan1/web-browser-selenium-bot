@@ -53,8 +53,13 @@ class Schedule:
         self.elm = 0
 
         self.login()
+
+        self.debug_input()
         asyncio.run(self.main())
-            
+
+    def debug_input(self):
+        a = input()
+        self.driver.find_element(XPath, a)
     async def main(self):
         await asyncio.gather(self.terminal_stats(), self.bot_loop())
  
@@ -195,50 +200,28 @@ class Schedule:
             poluj = self.driver.find_element(By.XPATH, f"//img[@src='img/lokacje/s/{self.FIGHT_LOCATION}.jpg']")
             poluj.click()
         except:
-            # locations need to be refreshed    @TODO handle it
             exception_break()
     
     def pokemon_events(self):
         if self.st.is_shiny() or self.st.is_on_whitelist():
             self.running = False
-            time.sleep(10)
+            # @todo coś z tym zrobić
         else:
             self.fight_pokemon()
             self.catch_pokemon()
+            # z poziomu drivera przybliżenie na 60%?
             self.st.have_item()
 
     def other_events(self):
-        if self.st.is_trainer():
-            self.heal_all()     # for now it's okay if the first pokemon in the team is weak
-                                # although @TODO make a handle popup window "everyone is healed"
-
         if self.st.is_end_pa():
             self.drink_oak()
-#       if self.st.is_tm() or self.st.is_porosnieta_ska() \
-#           or self.st.is_pole_magne() or self.st.if_is_alola():        # @TODO make a whitelist for items, this is not working currectly I think
-#           gui.user_reaction()
+        # handle rezerwa
 
     def manage_elm(self):
         self.loc = self.elm.find_locations()
         self.elm.open_elm_bar()
-
-        old_elm_progress = None
-
-        while True:
-            self.hunt()
-            elm_progress = self.elm.get_progress()
-
-            # NOT working
-            if old_elm_progress != elm_progress and old_elm_progress is not None:
-                exception_break()
-            else:
-                old_elm_progress = elm_progress
-
-            if self.st.is_pokemon():
-                self.pokemon_events()
-                break
-            else:
-                self.other_events()
+        self.elm_status = self.elm.get_status()
+# dwie pierwsze funkcje dać osobno by tylko raz się odpaliły 
 
     def travel(self):
         self.rezerwa_info()
