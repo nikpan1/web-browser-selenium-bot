@@ -30,11 +30,10 @@ class Schedule:
         POKEWARS = "https://pokewars.pl"
         options = webdriver.FirefoxOptions()
         options.add_argument('--disable-blink-features=AutomationControlled')
-        options.set_preference("permissions.default.image", 2)
+#        options.set_preference("permissions.default.image", 2)
  
         self.driver = webdriver.Firefox(options=options, service=FirefoxService(GeckoDriverManager().install()))
         self.driver.get(POKEWARS)
-
 
         self.FIGHT_POKEMON = 4
         self.FIGHT_LOCATION = 4
@@ -48,11 +47,18 @@ class Schedule:
         self.st = Statements(self.driver)
         self.elm = Elm(self.driver)
 
-        self.loc = self.elm.find_locations()
-        self.team = self.elm.find_team()
-
         self.login()
         self.elm.show_elm()
+              
+        self.loc = self.elm.find_locations()
+        
+        while True:
+            self.hunt()
+            if self.st.is_pokemon():
+                self.team = self.elm.find_team()
+                break
+       
+        print(self.loc, "\n", self.team)
 
 
     def debug_input(self):
@@ -134,9 +140,10 @@ class Schedule:
         self.driver.save_screenshot(f"screenshot{current_time}.png")
 
     def fight_pokemon(self):
+        pickedPokemon = self.team[self.FIGHT_POKEMON]
+        
         try:
             # attack with the choosen pokemon
-            pickedPokemon = self.team[self.FIGHT_POKEMON]
             cth = self.driver.find_element(By.XPATH, f"//form[@name='{pickedPokemon}']")
             cth.click()
         except:
@@ -156,8 +163,7 @@ class Schedule:
         try:
             # click the picked location button
             hunt_location = self.loc[self.FIGHT_LOCATION]
-            
-            poluj = self.driver.find_element(By.XPATH, f"//img[@src='img/lokacje/s/{self.FIGHT_LOCATION}.jpg']")
+            poluj = self.driver.find_element(By.XPATH, f"//img[@src='img/lokacje/s/{hunt_location}.jpg']")
             poluj.click()
         except:
             print("3")
