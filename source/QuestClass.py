@@ -48,14 +48,6 @@ class Elm:
             cth = self.driver.find_element(By.XPATH, "//div[@title='Zadanie codzienne']")
             cth.click()
         except:
-            self.new_quest()
-            self.show_elm()
-
-    def open_elm_bar(self):
-        try:
-            cth = self.driver.find_element(By.XPATH, "//div[@title='Zadanie codzienne']")
-            cth.click()
-        except:
             print("nie naduszono elm")
 
     def get_progress(self):
