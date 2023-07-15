@@ -78,24 +78,28 @@ class Schedule:
 
     async def bot_loop(self):
         while True:
-            if self.running:
-                continue
-            self.travel()
             self.user_input()
+            if self.running:
+                self.travel()
             await asyncio.sleep(1)
 
     def user_input(self):
+        if self.usr_cmd != " ":
+            print(self.usr_cmd)
         if len(self.usr_cmd) > 1:
             return
         if self.usr_cmd == "stop":
+            print("STOP")
             self.running = False
         if self.usr_cmd == "start":
-            print("start")
+            print("START")
             self.running = True 
         if self.usr_cmd == "?":
+            print("HELP")
             self.print_status()
         arguments = self.usr_cmd.split()
         if len(arguments) == 2:
+            print("POKEMON | LOCATION")
             self.FIGHT_POKEMON = int(arguments[0])
             self.FIGHT_LOCATION = int(arguments[1])
 
@@ -105,7 +109,7 @@ class Schedule:
         self.running = False
         print("EXCEPTION BREAK")
         while not self.running:
-            pass
+            self.user_input()
 
     def print_status(self):
         #os.system('cls' if os.name == 'nt' else 'clear')
@@ -189,7 +193,7 @@ class Schedule:
 
 
     def manage_elm(self):
-        self.elm_status = self.elm.get_status()
+        self.elm_status = self.elm.get_progress()
         # tutaj dać by czytało każde zadanie
 
     def travel(self):
