@@ -40,8 +40,8 @@ class Schedule:
         self.usr_cmd = " "
         self.rezerwa_count = 0
         self.running = False
-        self.elm_status = 0
-
+        
+        self.skip_eggs = True
 
         self.pb = Throw(self.driver)
         self.st = Statements(self.driver)
@@ -51,7 +51,8 @@ class Schedule:
         self.elm.show_elm()
               
         self.loc = self.elm.find_locations()
-        
+        self.elm_status = self.elm.get_progress()
+
         while True:
             self.hunt()
             if self.st.is_pokemon():
@@ -81,12 +82,10 @@ class Schedule:
             self.user_input()
             if self.running:
                 self.travel()
-            await asyncio.sleep(1)
+            await asyncio.sleep(0.1)
 
     def user_input(self):
-        if self.usr_cmd != " ":
-            print(self.usr_cmd)
-        if len(self.usr_cmd) > 1:
+        if len(self.usr_cmd) < 2:
             return
         if self.usr_cmd == "stop":
             print("STOP")
@@ -108,8 +107,10 @@ class Schedule:
     def exception_break(self):
         self.running = False
         print("EXCEPTION BREAK")
-        while not self.running:
+        while True:
             self.user_input()
+            if self.running == True:
+                break
 
     def print_status(self):
         #os.system('cls' if os.name == 'nt' else 'clear')
@@ -191,9 +192,23 @@ class Schedule:
         if self.rezerwa_info() > 80:#%
             self.sell_all()
 
+        if self.st.is_egg() and self.skip_eggs:
+            self.skip_egg()
+        elif self.st.is_egg() and not self.skip_eggs:
+            self.exception_break()
+    
+    def skip_egg():
+        try:
+            cth = self.driver.find_element(By.XPATH, "//input[@name='poluj']")
+            cth.click()
+        except:
+            print("skip_egg")
+            self.exception_break()
 
     def manage_elm(self):
         self.elm_status = self.elm.get_progress()
+        print(self.elm_status)
+        #if -1 then press elm_status, if still -1, then click new QuestClass
         # tutaj dać by czytało każde zadanie
 
     def travel(self):

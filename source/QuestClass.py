@@ -7,7 +7,6 @@ class Elm:
     def __init__(self, driver):
         self.driver = driver
         self.old_text = None
-        self.get_progress()
 
     def find_locations(self):
         lokacje = []
@@ -51,18 +50,16 @@ class Elm:
             print("nie naduszono elm")
 
     def get_progress(self):
+        active = 0
         try:
-            a_div = self.driver.find_element_by_class_name("data-box light-blue daily-data-box")
-            b_div = a_div.find_element_by_class_name("col w_2-10 actions-choose-container")
-            c_div = b_div.find_element_by_class_name("action-to-choose current selected")
-
-            print("len poluj = ", int(c_div.text))
-
-            return int(c_div.text)
+            tasks = self.driver.find_element(By.XPATH, "//div[@title='Aktywna akcja']")
+            active = int(tasks.text)
+            print(tasks.)
+            print("len poluj = ", len(size))
         except:
-            print("nie znaleziono elma")
             return -1
 
+        return active
 
 class Samson:
     def __init__(self, driver):
