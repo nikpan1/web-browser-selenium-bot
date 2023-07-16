@@ -71,6 +71,7 @@ class Elm:
                 found_id, similiarity_percentage = self.find_most_similar_position(td.text, loc) 
                 if similiarity_percentage > 70:#%
                     # we found it!
+                    print("found location = ", loc[found_id], " |",similiarity_percentage)
                     return found_id
             return location
         except:

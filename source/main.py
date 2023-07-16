@@ -29,6 +29,7 @@ from QuestClass import Elm  #
 # zoom out - press ctrl - 2 times on start 
 # if img in daily contains src "img/items/" ->exception break
 # instead of creating a new driver instance, attach it to a active one 
+# if in manage_elm get_progress went wrong -> self.st.show_elm 
 
 
 class Schedule:
