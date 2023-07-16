@@ -28,6 +28,7 @@ from QuestClass import Elm  #
 # EXCEPTION BREAK nie działa
 # zoom out - press ctrl - 2 times on start 
 # if img in daily contains src "img/items/" ->exception break
+# instead of creating a new driver instance, attach it to a active one 
 
 
 class Schedule:
@@ -51,7 +52,7 @@ class Schedule:
         self.elm = Elm(self.driver)
 
 
-        self.FIGHT_POKEMON = 4
+        self.FIGHT_POKEMON = 3
         self.FIGHT_LOCATION = 4
         self.DEFAULT_FIGHT_LOCATION = 4
 
@@ -65,7 +66,8 @@ class Schedule:
         
         self.elm.show_elm()
         self.elm_status = self.elm.get_progress()
-        self.elm_location = self.elm.get_daily_quest_info()
+        self.elm_location = self.elm.get_daily_quest_info(self.loc)
+        
         if self.elm_location in self.loc:
             self.FIGHT_LOCATION = self.loc.index(self.elm_location)
             print("elm_location = ", self.elm_location)
@@ -235,13 +237,13 @@ class Schedule:
             self.elm_status = progress
             print("quest part ended!")
 
-            quest_loc = self.elm.get_daily_quest_info()
-            if quest_loc in self.loc:
-                print("elm_location = ", self.elm_location)
-                self.FIGHT_LOCATION = self.loc.index(quest_loc)
-            elif quest_loc == "none":
+            quest_loc = self.elm.get_daily_quest_info(self.loc)
+            if quest_loc == "none":
                 self.FIGHT_LOCATION = self.DEFAULT_FIGHT_LOCATION  
-             
+            else:
+                # check if there is an item to give else:
+                self.FIGHT_LOCATION = quest_loc
+
         #if -1 then press elm_status, if still -1, then click new QuestClass
         # tutaj dać by czytało każde zadanie
 
