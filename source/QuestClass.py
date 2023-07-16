@@ -58,7 +58,36 @@ class Elm:
             return -1
 
         return active
+    
+    def get_daily_quest_info(self):
+        try:
+            info_panel = self.driver.find_element(By.XPATH, "//div[@class='info-box-transparent_panel']")
+            location_img = info_panel.find_element(By.XPATH, "//img[contains(@src, 'img/lokacje/s/')]")
+            
+            source = location_img.get_attribute('src').split('/')
+            location = source[6]
+            location = location.replace(".jpg", "")
+
+            return location
+        except:
+            # check if there is an item to give
+            # else go, to the picked location 
+            return "none"
+
 
 class Samson:
     def __init__(self, driver):
         self.driver = driver
+
+
+
+
+
+
+
+
+
+
+
+
+

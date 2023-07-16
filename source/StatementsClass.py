@@ -73,7 +73,7 @@ class Statements:
     def is_egg(self):
         try:
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
-            print(search.text)
+            #print(search.text)
             return "Inkubatora" in search.text
         except:
             pass

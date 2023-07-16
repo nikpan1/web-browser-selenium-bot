@@ -21,50 +21,64 @@ from QuestClass import Elm  #
 # @TODO default settings
 # @TODO filtrowanie rezerwy
 # @TODO przed sprzedażą niech wszystkich ewo
-# @TODO skip found egg
-# z poziomu drivera przybliżenie ekranu na 60%?
+
+# if text contains "Brawo!" _. you found an item 
+# if "nauczyciela" -> TMA
+# if "Lidera" -> Lider sali
+# EXCEPTION BREAK nie działa
+# zoom out - press ctrl - 2 times on start 
+# if img in daily contains src "img/items/" ->exception break
 
 
 class Schedule:
     def __init__(self):
-        POKEWARS = "https://pokewars.pl"
+        # settings
+        self.load_images = True 
+        self.skip_eggs = True
+        self.skip_tutor = True
+
+
+        POKEWARS = "https://pokewars.pl"        
         options = webdriver.FirefoxOptions()
         options.add_argument('--disable-blink-features=AutomationControlled')
-#        options.set_preference("permissions.default.image", 2)
- 
+        if not self.load_images:
+            options.set_preference("permissions.default.image", 2)
         self.driver = webdriver.Firefox(options=options, service=FirefoxService(GeckoDriverManager().install()))
         self.driver.get(POKEWARS)
-
-        self.FIGHT_POKEMON = 4
-        self.FIGHT_LOCATION = 4
-        self.usr_cmd = " "
-        self.rezerwa_count = 0
-        self.running = False
-        
-        self.skip_eggs = True
 
         self.pb = Throw(self.driver)
         self.st = Statements(self.driver)
         self.elm = Elm(self.driver)
 
+
+        self.FIGHT_POKEMON = 4
+        self.FIGHT_LOCATION = 4
+        self.DEFAULT_FIGHT_LOCATION = 4
+
+        self.usr_cmd = " "
+        self.rezerwa_count = 0
+        self.running = False
+        
         self.login()
-        self.elm.show_elm()
-              
+
         self.loc = self.elm.find_locations()
+        
+        self.elm.show_elm()
         self.elm_status = self.elm.get_progress()
+        self.elm_location = self.elm.get_daily_quest_info()
+        if self.elm_location in self.loc:
+            self.FIGHT_LOCATION = self.loc.index(self.elm_location)
+            print("elm_location = ", self.elm_location)
+
 
         while True:
             self.hunt()
             if self.st.is_pokemon():
                 self.team = self.elm.find_team()
                 break
-       
+ 
         print(self.loc, "\n", self.team)
 
-
-    def debug_input(self):
-        a = input()
-        self.driver.find_element(by.XPath, a)
 
     async def read_user_input(self):
         while True:
@@ -96,19 +110,25 @@ class Schedule:
         if self.usr_cmd == "?":
             print("HELP")
             self.print_status()
+        if self.usr_cmd == "ss":
+            self.screenshot
+            
+
         arguments = self.usr_cmd.split()
         if len(arguments) == 2:
-            print("POKEMON | LOCATION")
             self.FIGHT_POKEMON = int(arguments[0])
             self.FIGHT_LOCATION = int(arguments[1])
+            self.DEFAULT_FIGHT_LOCATION = int(arguments[0])
 
+            print("POKEMON = ", self.team[self.FIGHT_POKEMON])
+            print("LOCATION =  ", self.loc[self.FIGHT_LOCATION])
+        
         self.usr_cmd = " "
 
     def exception_break(self):
+        print("exception_break") 
         self.running = False
-        print("EXCEPTION BREAK")
         while True:
-            self.user_input()
             if self.running == True:
                 break
 
@@ -156,12 +176,10 @@ class Schedule:
             self.heal_all()
             cth = self.driver.find_element(By.XPATH, f"//form[@name='{pickedPokemon}']")
             cth.click()
-            print("1")
         try:
             cth = self.driver.find_element(By.XPATH, "//a[@href='#wynik_walki']")
             cth.click()
         except:
-            print("2")
             self.exception_break()
 
     def hunt(self):
@@ -171,7 +189,6 @@ class Schedule:
             poluj = self.driver.find_element(By.XPATH, f"//img[@src='img/lokacje/s/{hunt_location}.jpg']")
             poluj.click()
         except:
-            print("3")
             self.exception_break()
             
     def pokemon_events(self):
@@ -206,17 +223,25 @@ class Schedule:
             self.exception_break()
 
     def manage_elm(self):
-        if self.elm_status != self.elm.get_progress():
-            print("quest ended!")
-        
-        try:
-            table = self.driver.find_element(By.XPATH, "//table[@class='action-table']")
-            tds = self.driver.find_elements(By.XPATH, ".//td")
-            print("tdlen = ", len(tds))
-            for td in tds:
-                print(td.text)
-        except:
-            pass
+        progress = self.elm.get_progress()
+        if progress == -1:
+            self.elm.new_quest()
+            print("Próba wzięcia zadania codziennego")
+            progress = self.elm.get_progress()
+            if progress == -1:
+                self.exception_break()
+
+        if self.elm_status != progress:
+            self.elm_status = progress
+            print("quest part ended!")
+
+            quest_loc = self.elm.get_daily_quest_info()
+            if quest_loc in self.loc:
+                print("elm_location = ", self.elm_location)
+                self.FIGHT_LOCATION = self.loc.index(quest_loc)
+            elif quest_loc == "none":
+                self.FIGHT_LOCATION = self.DEFAULT_FIGHT_LOCATION  
+             
         #if -1 then press elm_status, if still -1, then click new QuestClass
         # tutaj dać by czytało każde zadanie
 

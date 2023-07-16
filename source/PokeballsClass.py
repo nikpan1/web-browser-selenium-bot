@@ -13,7 +13,7 @@ class Throw:
             cth = self.driver.find_element(By.XPATH, f"//form[@name='pokeball_{pokeball_name}']")
             cth.click()
         except:
-            print("Error:" + pokeball_name)
+            #print("Error:" + pokeball_name)
             return True
 
         return False
