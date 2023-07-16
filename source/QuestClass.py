@@ -52,10 +52,8 @@ class Elm:
     def get_progress(self):
         active = 0
         try:
-            tasks = self.driver.find_element(By.XPATH, "//div[@title='Aktywna akcja']")
+            tasks = self.driver.find_element(By.XPATH, "//div[@class='action-to-choose current selected']")
             active = int(tasks.text)
-            print(tasks.)
-            print("len poluj = ", len(size))
         except:
             return -1
 

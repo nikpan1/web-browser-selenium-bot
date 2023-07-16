@@ -138,7 +138,7 @@ class Schedule:
         search.send_keys(password)
 
         search.send_keys(Keys.RETURN)
-        time.sleep(3)
+        time.sleep(5)
 
     def screenshot(self):
         current_time = datetime.now().time()
@@ -206,8 +206,17 @@ class Schedule:
             self.exception_break()
 
     def manage_elm(self):
-        self.elm_status = self.elm.get_progress()
-        print(self.elm_status)
+        if self.elm_status != self.elm.get_progress():
+            print("quest ended!")
+        
+        try:
+            table = self.driver.find_element(By.XPATH, "//table[@class='action-table']")
+            tds = self.driver.find_elements(By.XPATH, ".//td")
+            print("tdlen = ", len(tds))
+            for td in tds:
+                print(td.text)
+        except:
+            pass
         #if -1 then press elm_status, if still -1, then click new QuestClass
         # tutaj dać by czytało każde zadanie
 
