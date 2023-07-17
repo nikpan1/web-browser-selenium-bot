@@ -29,7 +29,7 @@ from QuestClass import Elm  #
 # zoom out - press ctrl - 2 times on start 
 # if img in daily contains src "img/items/" ->exception break
 # instead of creating a new driver instance, attach it to a active one 
-# if in manage_elm get_progress went wrong -> self.st.show_elm 
+# if found egg -> input name="poluj"  
 
 
 class Schedule:
@@ -38,7 +38,6 @@ class Schedule:
         self.load_images = True 
         self.skip_eggs = True
         self.skip_tutor = True
-
 
         POKEWARS = "https://pokewars.pl"        
         options = webdriver.FirefoxOptions()
@@ -54,8 +53,8 @@ class Schedule:
 
 
         self.FIGHT_POKEMON = 3
-        self.FIGHT_LOCATION = 4
-        self.DEFAULT_FIGHT_LOCATION = 4
+        self.FIGHT_LOCATION = 2 
+        self.DEFAULT_FIGHT_LOCATION = 2
 
         self.usr_cmd = " "
         self.rezerwa_count = 0
@@ -110,6 +109,9 @@ class Schedule:
         if self.usr_cmd == "start":
             print("START")
             self.running = True 
+        if self.usr_cmd == "restart":
+            print("RESTART")
+            self.loc = self.elm.find_locations()
         if self.usr_cmd == "?":
             print("HELP")
             self.print_status()
@@ -128,13 +130,14 @@ class Schedule:
         
         self.usr_cmd = " "
 
-    def exception_break(self):
+    async def exception_break(self):
         print("exception_break") 
         self.running = False
         while True:
+            self.user_input()
             if self.running == True:
                 break
-
+                
     def print_status(self):
         #os.system('cls' if os.name == 'nt' else 'clear')
         if self.running == True:
@@ -183,6 +186,7 @@ class Schedule:
             cth = self.driver.find_element(By.XPATH, "//a[@href='#wynik_walki']")
             cth.click()
         except:
+            print("fight_pokemon")
             self.exception_break()
 
     def hunt(self):
@@ -192,6 +196,7 @@ class Schedule:
             poluj = self.driver.find_element(By.XPATH, f"//img[@src='img/lokacje/s/{hunt_location}.jpg']")
             poluj.click()
         except:
+            print("hunt")
             self.exception_break()
             
     def pokemon_events(self):
@@ -213,11 +218,27 @@ class Schedule:
             self.sell_all()
 
         if self.st.is_egg() and self.skip_eggs:
+            print("Found an egg! Skipping c:")
             self.skip_egg()
         elif self.st.is_egg() and not self.skip_eggs:
+            print("Found an egg!")
             self.exception_break()
-    
-    def skip_egg():
+        if self.st.is_tm():
+            print("TM!")
+            self.exception_break()
+        if self.st.is_tma() and self.skip_tutor:
+            print("TMA!")
+            self.skip_tma()
+
+    def skip_tma(self):
+        try:
+            cth = self.driver.find_element(By.XPATH, "//button[@class='vex-dialog-button-primary vex-dialog-button vex-first']")
+            cth.click()
+        except:
+            print("skip_tma")
+            self.exception_break()
+
+    def skip_egg(self):
         try:
             cth = self.driver.find_element(By.XPATH, "//input[@name='poluj']")
             cth.click()
@@ -228,12 +249,13 @@ class Schedule:
     def manage_elm(self):
         progress = self.elm.get_progress()
         if progress == -1:
-            self.elm.new_quest()
-            print("Próba wzięcia zadania codziennego")
+            print("new quest needed")
+            #self.elm.new_quest()
             progress = self.elm.get_progress()
             if progress == -1:
+                print("manage_elm")
                 self.exception_break()
-
+                
         if self.elm_status != progress:
             self.elm_status = progress
             print("quest part ended!")
