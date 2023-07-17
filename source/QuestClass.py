@@ -7,7 +7,6 @@ class Elm:
     def __init__(self, driver):
         self.driver = driver
         self.old_text = None
-        self.get_progress()
 
     def find_locations(self):
         lokacje = []
@@ -48,30 +47,86 @@ class Elm:
             cth = self.driver.find_element(By.XPATH, "//div[@title='Zadanie codzienne']")
             cth.click()
         except:
-            self.new_quest()
-            self.show_elm()
-
-    def open_elm_bar(self):
-        try:
-            cth = self.driver.find_element(By.XPATH, "//div[@title='Zadanie codzienne']")
-            cth.click()
-        except:
             print("nie naduszono elm")
 
     def get_progress(self):
+        active = 0
         try:
-            a_div = self.driver.find_element_by_class_name("data-box light-blue daily-data-box")
-            b_div = a_div.find_element_by_class_name("col w_2-10 actions-choose-container")
-            c_div = b_div.find_element_by_class_name("action-to-choose current selected")
-
-            print("len poluj = ", int(c_div.text))
-
-            return int(c_div.text)
+            tasks = self.driver.find_element(By.XPATH, "//div[@class='action-to-choose current selected']")
+            active = int(tasks.text)
         except:
-            print("nie znaleziono elma")
             return -1
 
+        return active
+
+
+    def get_daily_quest_info(self, loc):
+        try:
+            info_panel = self.driver.find_element(By.XPATH, "//div[@class='info-box-transparent_panel']")
+            table = info_panel.find_elements(By.XPATH, ".//td")
+            
+            avg_len = self.calculate_avg_len(loc) - 2
+
+            for td in table:
+                found_id, similiarity_percentage = self.find_most_similar_position(td.text, loc) 
+                if similiarity_percentage > 70:#%
+                    # we found it!
+                    print("found location = ", loc[found_id], " |",similiarity_percentage)
+                    return found_id
+            return location
+        except:
+            return -1
+    
+    def calculate_avg_len(self, loc):
+        sum = 0
+        for l in loc:
+            sum += len(l)
+        return sum/len(loc)
+
+    # source: chat gpt 
+    def find_most_similar_position(self, target_string, string_list):
+        max_similarity = 0
+        most_similar_position = None
+
+        for i, string in enumerate(string_list):
+            similarity = self.calculate_similarity(target_string, string)
+            if similarity > max_similarity:
+                max_similarity = similarity
+                most_similar_position = i
+
+        return most_similar_position, max_similarity
+
+    def calculate_similarity(self, string1, string2):
+        len1 = len(string1)
+        len2 = len(string2)
+        max_len = max(len1, len2)
+
+        if max_len == 0:
+            return 100.0
+
+        common_chars = 0
+
+        for char1 in string1:
+            if char1 in string2:
+                common_chars += 1
+                string2 = string2.replace(char1, '', 1)
+
+        similarity = (common_chars / max_len) * 100.0
+        return similarity
 
 class Samson:
     def __init__(self, driver):
         self.driver = driver
+
+
+
+
+
+
+
+
+
+
+
+
+

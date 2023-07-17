@@ -73,11 +73,10 @@ class Statements:
     def is_egg(self):
         try:
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
-            print(search.text)
+            #print(search.text)
             return "Inkubatora" in search.text
         except:
-            pass
-        return False
+            return False
 
     def is_pole_magne(self):
         try:
@@ -102,6 +101,15 @@ class Statements:
         except:
             pass
         return False
+
+    def is_tma(self):
+        try:
+            search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
+            return "nauczyciela" in search.text
+        except:
+            pass
+        return False
+
 
     def if_this_pokemon(self, pokemon="aaaaa"):
         try:
