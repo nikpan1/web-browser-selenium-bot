@@ -130,14 +130,10 @@ class Schedule:
         
         self.usr_cmd = " "
 
-    async def exception_break(self):
+    def exception_break(self):
         print("exception_break") 
         self.running = False
-        while True:
-            self.user_input()
-            if self.running == True:
-                break
-                
+
     def print_status(self):
         #os.system('cls' if os.name == 'nt' else 'clear')
         if self.running == True:
@@ -254,7 +250,6 @@ class Schedule:
             progress = self.elm.get_progress()
             if progress == -1:
                 print("manage_elm")
-                self.exception_break()
                 
         if self.elm_status != progress:
             self.elm_status = progress
