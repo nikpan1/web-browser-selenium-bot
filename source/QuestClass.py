@@ -112,19 +112,4 @@ class Elm:
         similarity = (common_chars / max_len) * 100.0
         return similarity
 
-class Samson:
-    def __init__(self, driver):
-        self.driver = driver
-
-
-
-
-
-
-
-
-
-
-
-
 

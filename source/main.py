@@ -39,9 +39,7 @@ class Schedule:
         self.FIGHT_LOCATION = 2 
         self.DEFAULT_FIGHT_LOCATION = 2
 
-        self.usr_cmd = " "
         self.rezerwa_count = 0
-        self.running = False
         
         self.init_elm()        
 
@@ -58,7 +56,9 @@ class Schedule:
             self.FIGHT_LOCATION = self.loc.index(self.elm_location)
 
         while True:
-            self.actions.hunt()
+            pk = self.loc[self.FIGHT_POKEMON()]
+            if not self.actions.hunt(pk):
+                self.exception_break()
             if self.st.is_pokemon():
                 self.team = self.elm.find_team()
                 break
@@ -69,11 +69,11 @@ class Schedule:
         BOLD_ON = '\033[1m'
         BOLD_OFF = '\033[0m'
 
-        for l, index in enumerate(self.loc):
+        for lo, index in enumerate(self.loc):
             if self.FIGHT_LOCATION:
-                print(BOLD_ON + index + ". " + l + BOLD_OFF)
+                print(BOLD_ON + index + ". " + lo + BOLD_OFF)
             else:        
-                print(index + ". " + l)
+                print(index + ". " + lo)
         
         for t, index in enumerate(self.team):
             if self.FIGHT_POKEMON:
@@ -140,7 +140,8 @@ class Schedule:
 
         if self.st.is_egg() and self.skip_eggs:
             print("Found an egg!(skip)")
-            self.actions.skip_egg()
+            if not self.actions.skip_egg():
+                self.exception_break()
         elif self.st.is_egg() and not self.skip_eggs:
             print("Found an egg!")
             self.exception_break()
@@ -149,7 +150,8 @@ class Schedule:
             self.exception_break()
         if self.st.is_tma() and self.skip_tutor:
             print("TMA!")
-            self.actions.skip_tma()
+            if not self.actions.skip_tma():
+                self.exception_break()
 
     def manage_elm(self):
         progress = self.elm.get_progress()
@@ -172,7 +174,9 @@ class Schedule:
                 self.FIGHT_LOCATION = quest_loc
 
     def travel(self):
-        self.actions.hunt(self.loc[self.FIGHT_LOCATION])
+        pk = self.loc[self.FIGHT_LOCATION]
+        if not self.actions.hunt(pk):
+            self.exception_break()
 
         if self.st.is_pokemon():
             self.pokemon_events()

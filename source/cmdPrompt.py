@@ -1,40 +1,33 @@
 import asyncio
-from main import Scheduler
-from DiscordBot import DiscordBot
 
-
-if __name__ == "__main__":
-    cp = cmdPrompt()
-    asyncio.run(cp.main())
-    exit(0)
+from main import Schedule
+from DiscordBod import DCBotAPI
 
 
 class cmdPrompt:
-    def __init__():
+    def __init__(self, mode):
         self.schedule = Schedule(True, True, True)
-        self.dc_bot = DiscordBot()
+        self.dc_bot = DCBotAPI()
+        self.running = False
         
     async def main(self):
-        input_task = asyncio.create_task(bot.read_user_input())
-        print_task = asyncio.create_task(bot.bot_loop())
+        input_task = asyncio.create_task(self.terminal_stats())
+        print_task = asyncio.create_task(self.bot_loop())
         await asyncio.gather(input_task, print_task)
 
-    async def read_user_input(self):
-        while True:
-            self.usr_cmd = await self.terminal_stats()
+    #async def read_user_input(self):
+    #    while True:
+    #        self.usr_cmd = await self.terminal_stats()
 
     async def terminal_stats(self):
         loop = asyncio.get_running_loop()
         return await loop.run_in_executor(None, input)
 
-    async def main(self):
-        await asyncio.gather(self.terminal_stats(), self.bot_loop())
-
     async def bot_loop(self):
         while True:
             self.user_input()
             if self.running:
-                self.travel()
+                self.schedule.travel()
             await asyncio.sleep(0.1)
 
     def user_input(self):
@@ -48,32 +41,34 @@ class cmdPrompt:
             self.running = True 
         if self.usr_cmd == "restart":
             print("RESTART")
-            self.loc = self.elm.find_locations()
+            self.schedule.loc = self.schedule.elm.find_locations()
         if self.usr_cmd == "?":
             print("HELP")
             self.print_status()
         if self.usr_cmd == "ss":
-            self.screenshot
+            self.screenshot()
             
-
         arguments = self.usr_cmd.split()
         if len(arguments) == 2:
-            self.FIGHT_POKEMON = int(arguments[0])
-            self.FIGHT_LOCATION = int(arguments[1])
-            self.DEFAULT_FIGHT_LOCATION = int(arguments[0])
+            self.schedule.FIGHT_POKEMON = int(arguments[0])
+            self.schedule.FIGHT_LOCATION = int(arguments[1])
+            self.schedule.DEFAULT_FIGHT_LOCATION = int(arguments[1])
 
-            print("POKEMON = ", self.team[self.FIGHT_POKEMON])
-            print("LOCATION =  ", self.loc[self.FIGHT_LOCATION])
+            print("POKEMON = ", self.schedule.team[self.schedule.FIGHT_POKEMON])
+            print("LOCATION =  ", self.schedule.loc[self.schedule.FIGHT_LOCATION])
         
         self.usr_cmd = " "
 
     def screenshot(self):
-        current_time = datetime.now().time()
-        self.schedule.driver.save_screenshot(f"screenshot{current_time}.png")
+        from datetime import datetime
+        current_time = datetime.now()
+        time_string = current_time.strftime("%H-%M-%S")
+
+        self.schedule.driver.save_screenshot(f"screenshot{time_string}.png")
 
     def print_status(self):
         #os.system('cls' if os.name == 'nt' else 'clear')
-        if self.running == True:
+        if self.running:
             print(f'XXXXXX RUNNING XXXXXX')
         else:
             print(f'XXXXXX WAITING XXXXXX')
@@ -81,6 +76,13 @@ class cmdPrompt:
         print(f'  rezerwa = {self.schedule.rezerwa_count}%')
         print(f'  {self.schedule.FIGHT_POKEMON} | {self.schedule.FIGHT_LOCATION}')
     
+
+
+if __name__ == "__main__":
+    # cli | dc
+    cp = cmdPrompt("terminal")
+    asyncio.run(cp.main())
+    exit(0)
 
 
 
