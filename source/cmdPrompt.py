@@ -1,90 +1,133 @@
 import asyncio
 
 from main import Schedule
-from DiscordBod import DCBotAPI
+import discord
+from discord.ext import commands
+import configparser
 
 
+def screenshot(driver):
+    from datetime import datetime
+    current_time = datetime.now()
+    time_string = current_time.strftime("%H-%M-%S")      
+    result = f"screenshots/screenshot{time_string}.png"
+    driver.save_screenshot(result)
+    return result
+ 
 class cmdPrompt:
-    def __init__(self, mode):
+    def __init__(self, mode):  # terminal | discord
         self.schedule = Schedule(True, True, True)
-        self.dc_bot = DCBotAPI()
         self.running = False
-        
+ 
+        self.setup_discord_bot()
+        self.discord_input()
+        self.bot.run(self.TOKEN)
+    
+    def setup_discord_bot(self):
+        self.bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
+
+        # load token from config.ini
+        config = configparser.ConfigParser()
+        config.read("config/config.ini")
+        self.TOKEN = config["DISCORD"]["TOKEN"]
+
+    def discord_input(self):
+        # event when the Client has established a connection to Discord
+        @self.bot.event 
+        async def on_ready():
+            print('\nBot is ready!\n')
+
+        @self.bot.command()
+        async def start(ctx):
+            self.running = True
+            await ctx.send("Bot is working!")
+
+        @self.bot.command()
+        async def stop(ctx):
+            self.running = False
+            await ctx.send("Bot is waiting!")
+
+        @self.bot.command()
+        async def reset(ctx):
+            self.running = False
+            self.schedule.loc = self.schedule.elm.find_locations()
+            
+            self.running = True
+            await ctx.send("Reseting Location and Pokemon lists:" + self.print_info())
+     
+        @self.bot.command()
+        async def set(ctx, fight, loc):
+            self.schedule.FIGHT_POKEMON = int(fight)
+            self.schedule.DEFAULT_FIGHT_LOCATION = int(loc)
+            self.schedule.FIGHT_LOCATION = int(loc)
+            await ctx.send(f"Pokemon = {self.schedule.team[self.schedule.FIGHT_POKEMON]}\n 
+                             Location = {self.schedule.loc[self.schedule.FIGHT_LOCATION}")
+
+        @self.bot.command()
+        async def screenshot(ctx):
+            filepath = screenshot(self.schedule.driver)
+            await ctx.send(file = discord.File(filepath))
+
+        @self.bot.command()
+        async def show(ctx, arg):
+            if arg == "img":
+                filepath = screenshot(self.schedule.driver)
+                await.ctx.send(file = discord.File(filepath))
+            elif arg == "list":
+                await ctx.send(self.print_info())
+            elif arg == "status":
+                await ctx.send(self.print_status())
+ 
+
     async def main(self):
-        input_task = asyncio.create_task(self.terminal_stats())
         print_task = asyncio.create_task(self.bot_loop())
-        await asyncio.gather(input_task, print_task)
-
-    #async def read_user_input(self):
-    #    while True:
-    #        self.usr_cmd = await self.terminal_stats()
-
-    async def terminal_stats(self):
-        loop = asyncio.get_running_loop()
-        return await loop.run_in_executor(None, input)
-
+        await asyncio.gather(print_task)
+    
     async def bot_loop(self):
         while True:
             self.user_input()
             if self.running:
                 self.schedule.travel()
             await asyncio.sleep(0.1)
-
-    def user_input(self):
-        if len(self.usr_cmd) < 2:
-            return
-        if self.usr_cmd == "stop":
-            print("STOP")
-            self.running = False
-        if self.usr_cmd == "start":
-            print("START")
-            self.running = True 
-        if self.usr_cmd == "restart":
-            print("RESTART")
-            self.schedule.loc = self.schedule.elm.find_locations()
-        if self.usr_cmd == "?":
-            print("HELP")
-            self.print_status()
-        if self.usr_cmd == "ss":
-            self.screenshot()
-            
-        arguments = self.usr_cmd.split()
-        if len(arguments) == 2:
-            self.schedule.FIGHT_POKEMON = int(arguments[0])
-            self.schedule.FIGHT_LOCATION = int(arguments[1])
-            self.schedule.DEFAULT_FIGHT_LOCATION = int(arguments[1])
-
-            print("POKEMON = ", self.schedule.team[self.schedule.FIGHT_POKEMON])
-            print("LOCATION =  ", self.schedule.loc[self.schedule.FIGHT_LOCATION])
-        
-        self.usr_cmd = " "
-
-    def screenshot(self):
-        from datetime import datetime
-        current_time = datetime.now()
-        time_string = current_time.strftime("%H-%M-%S")
-
-        self.schedule.driver.save_screenshot(f"screenshot{time_string}.png")
-
+   
     def print_status(self):
-        #os.system('cls' if os.name == 'nt' else 'clear')
+        result = ""
         if self.running:
-            print(f'XXXXXX RUNNING XXXXXX')
+            result += print(f'XXXXXX RUNNING XXXXXX')
         else:
-            print(f'XXXXXX WAITING XXXXXX')
-        print(f'  elm = {self.schedule.elm_status}%')
-        print(f'  rezerwa = {self.schedule.rezerwa_count}%')
-        print(f'  {self.schedule.FIGHT_POKEMON} | {self.schedule.FIGHT_LOCATION}')
+            result += print(f'XXXXXX WAITING XXXXXX')
+            result += (f'  elm = {self.schedule.elm_status}%')
+            result += (f'  rezerwa = {self.schedule.rezerwa_count}%')
+            result += (f'  {self.schedule.FIGHT_POKEMON} | 
+                       {self.schedule.FIGHT_LOCATION}')
+    
+    def print_info(self):
+        BOLD_ON = '\033[1m'
+        BOLD_OFF = '\033[0m'
+        
+        result = "\n"
+        for lo, index in enumerate(self.schedule.loc):
+            if self.schedule.FIGHT_LOCATION:
+                result += BOLD_ON + index + ". " + lo + BOLD_OFF
+            else:        
+                result += index + ". " + lo
+        
+        for t, index in enumerate(self.schedule.team):
+            if self.schedule.FIGHT_POKEMON:
+                result += BOLD_ON + index + ". " + t + BOLD_OFF
+            else:
+                result += index + ". " + t
+        
+        return result
     
 
-
 if __name__ == "__main__":
-    # cli | dc
     cp = cmdPrompt("terminal")
     asyncio.run(cp.main())
     exit(0)
 
 
+# niech wybiera tm, nie czeka
 
 
 

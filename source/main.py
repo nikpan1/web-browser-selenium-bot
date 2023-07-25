@@ -1,6 +1,4 @@
 ﻿import time
-import datetime
-import os
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -45,7 +43,6 @@ class Schedule:
 
     def init_elm(self):
         self.login()
-
         self.loc = self.elm.find_locations()
         
         self.elm.show_elm()
@@ -56,30 +53,12 @@ class Schedule:
             self.FIGHT_LOCATION = self.loc.index(self.elm_location)
 
         while True:
-            pk = self.loc[self.FIGHT_POKEMON()]
+            pk = self.loc[self.FIGHT_POKEMON]
             if not self.actions.hunt(pk):
                 self.exception_break()
             if self.st.is_pokemon():
                 self.team = self.elm.find_team()
                 break
-
-        self.print_info()        
-
-    def print_info(self):
-        BOLD_ON = '\033[1m'
-        BOLD_OFF = '\033[0m'
-
-        for lo, index in enumerate(self.loc):
-            if self.FIGHT_LOCATION:
-                print(BOLD_ON + index + ". " + lo + BOLD_OFF)
-            else:        
-                print(index + ". " + lo)
-        
-        for t, index in enumerate(self.team):
-            if self.FIGHT_POKEMON:
-                print(BOLD_ON + index + ". " + t + BOLD_OFF)
-            else:
-                print(index + ". " + t)
 
     def exception_break(self):
         print("exception_break") 
