@@ -97,7 +97,7 @@ class Statements:
     def is_tm(self):
         try:
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
-            return "Ci TM" in search.text
+            return "Lidera Sali" in search.text
         except:
             pass
         return False

@@ -10,7 +10,7 @@ from StatementsClass import Statements
 from PokeballsClass import Throw
 from QuestClass import Elm  
 from userActions import UserActions
-
+from cmdPrompt import screenshot 
 
 class Schedule:
     def __init__(self, load_img, skip_egg, skip_tutor):
@@ -18,7 +18,8 @@ class Schedule:
         self.load_images = load_img
         self.skip_eggs = skip_egg
         self.skip_tutor = skip_tutor
-
+        
+        # driver setup
         POKEWARS = "https://pokewars.pl"        
         options = webdriver.FirefoxOptions()
         options.add_argument('--disable-blink-features=AutomationControlled')
@@ -36,7 +37,6 @@ class Schedule:
         self.FIGHT_POKEMON = 3
         self.FIGHT_LOCATION = 2 
         self.DEFAULT_FIGHT_LOCATION = 2
-
         self.rezerwa_count = 0
         
         self.init_elm()        
@@ -124,13 +124,16 @@ class Schedule:
         elif self.st.is_egg() and not self.skip_eggs:
             print("Found an egg!")
             self.exception_break()
-        if self.st.is_tm():
+        elif self.st.is_tm():
             print("TM!")
             self.exception_break()
-        if self.st.is_tma() and self.skip_tutor:
+        elif self.st.is_tma() and self.skip_tutor:
             print("TMA!")
             if not self.actions.skip_tma():
                 self.exception_break()
+        else:
+            print("found new event!")
+            self.exception_break()
 
     def manage_elm(self):
         progress = self.elm.get_progress()

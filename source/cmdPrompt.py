@@ -1,18 +1,26 @@
 import asyncio
 
-from main import Schedule
 import discord
 from discord.ext import commands
 import configparser
+from main import Schedule
 
 
 def screenshot(driver):
+    import os
     from datetime import datetime
     current_time = datetime.now()
-    time_string = current_time.strftime("%H-%M-%S")      
-    result = f"screenshots/screenshot{time_string}.png"
-    driver.save_screenshot(result)
-    return result
+    time_string = current_time.strftime("%H-%M-%S")
+    filename = f"screenshots/screenshot{time_string}.png"
+
+    directory = "screenshot"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    
+    screenshot_path = os.path.join(directory, filename)
+
+    driver.save_screenshot(screenshot_path)
+    return screenshot_path
  
 class cmdPrompt:
     def __init__(self, mode):  # terminal | discord
@@ -128,7 +136,7 @@ if __name__ == "__main__":
 
 
 # niech wybiera tm, nie czeka
-
+# niech automatycznie wybiera zadanie bierze nowe zadanie  
 
 
 # @TODO remake logging system
