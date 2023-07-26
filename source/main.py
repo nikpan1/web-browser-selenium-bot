@@ -10,7 +10,7 @@ from StatementsClass import Statements
 from PokeballsClass import Throw
 from QuestClass import Elm  
 from userActions import UserActions
-from cmdPrompt import screenshot 
+
 
 class Schedule:
     def __init__(self, load_img, skip_egg, skip_tutor):

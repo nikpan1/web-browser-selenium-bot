@@ -18,7 +18,7 @@ def screenshot(driver):
         os.makedirs(directory)
     
     screenshot_path = os.path.join(directory, filename)
-
+    
     driver.save_screenshot(screenshot_path)
     return screenshot_path
  
@@ -85,7 +85,15 @@ class cmdPrompt:
                 await ctx.send(self.print_info())
             elif arg == "status":
                 await ctx.send(self.print_status())
- 
+        
+        @self.bot.command()
+        async def debug(ctx, text):
+            try:
+                cth = self.driver.find_element(By.XPATH, text) 
+                await ctx.send("text was found!")
+            except:
+                await ctx.send("text was *not* found!")
+
 
     async def main(self):
         print_task = asyncio.create_task(self.bot_loop())
@@ -102,12 +110,14 @@ class cmdPrompt:
         result = ""
         if self.running:
             result += print(f'XXXXXX RUNNING XXXXXX')
-        else:
+        if not self.running:
             result += print(f'XXXXXX WAITING XXXXXX')
-            result += (f'  elm = {self.schedule.elm_status}%')
-            result += (f'  rezerwa = {self.schedule.rezerwa_count}%')
-            result += (f'  {self.schedule.FIGHT_POKEMON} | 
-                       {self.schedule.FIGHT_LOCATION}')
+        
+        result += print(f'XXXXXX WAITING XXXXXX')
+        result += (f'  elm = {self.schedule.elm_status}%')
+        result += (f'  rezerwa = {self.schedule.rezerwa_count}%')
+        result += (f'  {self.schedule.FIGHT_POKEMON} | 
+             {self.schedule.FIGHT_LOCATION}')
     
     def print_info(self):
         BOLD_ON = '\033[1m'
