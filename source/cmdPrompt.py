@@ -1,43 +1,61 @@
 import asyncio
+import os
+import configparser
+from datetime import datetime
+
+import selenium
+from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webdriver import WebDriver
 
 import discord
 from discord.ext import commands
-import configparser
+
 from main import Schedule
 
 
-def screenshot(driver):
-    import os
-    from datetime import datetime
-    current_time = datetime.now()
-    time_string = current_time.strftime("%H-%M-%S")
-    filename = f"screenshots/screenshot{time_string}.png"
+def make_screenshot(driver: WebDriver, directory: str = "screenshots") -> str:
+    try:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
 
-    directory = "screenshot"
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-    
-    screenshot_path = os.path.join(directory, filename)
-    
-    driver.save_screenshot(screenshot_path)
-    return screenshot_path
- 
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        filename = f"screenshot_{timestamp}.png"
+        screenshot_path = os.path.join(directory, filename)
+
+        driver.save_screenshot(screenshot_path)
+        return screenshot_path
+    except Exception as e:
+        # Handle any exceptions that might occur during the screenshot process
+        print(f"Error capturing screenshot: {e}")
+        return ""
+
+
 class cmdPrompt:
     def __init__(self, mode):  # terminal | discord
-        self.schedule = Schedule(True, True, True)
+        self.get_config()
+        self.schedule = Schedule(self.login, self.password, True, True, True)
         self.running = False
- 
+        
+        self.guild_id = 0 
+        self.channel_id = 0 
         self.setup_discord_bot()
         self.discord_input()
-        self.bot.run(self.TOKEN)
-    
-    def setup_discord_bot(self):
-        self.bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
+       
+        self.schedule.init_elm()
+        self.start()
 
+    def get_config(self):
         # load token from config.ini
         config = configparser.ConfigParser()
         config.read("config/config.ini")
+
         self.TOKEN = config["DISCORD"]["TOKEN"]
+        self.login = config["LOGGING_IN"]["LOGIN"]
+        self.password = config["LOGGING_IN"]["PASSWORD"]
+
+    def setup_discord_bot(self):
+        self.bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
+        # --! !--
 
     def discord_input(self):
         # event when the Client has established a connection to Discord
@@ -47,6 +65,8 @@ class cmdPrompt:
 
         @self.bot.command()
         async def start(ctx):
+            self.guild_id = ctx.guild.id
+            self.channel_id = ctx.channel.id 
             self.running = True
             await ctx.send("Bot is working!")
 
@@ -68,19 +88,19 @@ class cmdPrompt:
             self.schedule.FIGHT_POKEMON = int(fight)
             self.schedule.DEFAULT_FIGHT_LOCATION = int(loc)
             self.schedule.FIGHT_LOCATION = int(loc)
-            await ctx.send(f"Pokemon = {self.schedule.team[self.schedule.FIGHT_POKEMON]}\n 
-                             Location = {self.schedule.loc[self.schedule.FIGHT_LOCATION}")
+            await ctx.send(f"Pokemon = {self.schedule.team[self.schedule.FIGHT_POKEMON]}\n" + 
+                           f"Location = {self.schedule.loc[self.schedule.FIGHT_LOCATION]}")
 
         @self.bot.command()
         async def screenshot(ctx):
-            filepath = screenshot(self.schedule.driver)
+            filepath = make_screenshot(self.schedule.driver)
             await ctx.send(file = discord.File(filepath))
 
         @self.bot.command()
         async def show(ctx, arg):
             if arg == "img":
-                filepath = screenshot(self.schedule.driver)
-                await.ctx.send(file = discord.File(filepath))
+                filepath = make_screenshot(self.schedule.driver)
+                await ctx.send(file = discord.File(filepath))
             elif arg == "list":
                 await ctx.send(self.print_info())
             elif arg == "status":
@@ -89,23 +109,40 @@ class cmdPrompt:
         @self.bot.command()
         async def debug(ctx, text):
             try:
-                cth = self.driver.find_element(By.XPATH, text) 
+                cth = self.schedule.driver.find_element(By.XPATH, text) 
                 await ctx.send("text was found!")
             except:
                 await ctx.send("text was *not* found!")
 
+    # Function to send a message to the specified channel in the server
+    async def send_message_to_server(self, server_id, channel_id, message):
+        try:
+            server = client.get_guild(int(server_id))
+        
+            channel = server.get_channel(int(channel_id))
 
-    async def main(self):
-        print_task = asyncio.create_task(self.bot_loop())
-        await asyncio.gather(print_task)
-    
+            await channel.send(message)
+        except Exception as e:
+            print(f"Error sending the message: {e}")
+
+    def start(self):
+        loop = asyncio.get_event_loop()
+        loop.create_task(self.bot_loop())
+        loop.run_until_complete(self.start_bot())
+ 
+    async def start_bot(self):
+        await self.bot.start(self.TOKEN)
+       
     async def bot_loop(self):
+        print("starting main loop")
         while True:
-            self.user_input()
+            if self.schedule.wait_request:
+                self.running = False
+                # send message to dc 
             if self.running:
                 self.schedule.travel()
             await asyncio.sleep(0.1)
-   
+
     def print_status(self):
         result = ""
         if self.running:
@@ -114,14 +151,14 @@ class cmdPrompt:
             result += print(f'XXXXXX WAITING XXXXXX')
         
         result += print(f'XXXXXX WAITING XXXXXX')
-        result += (f'  elm = {self.schedule.elm_status}%')
-        result += (f'  rezerwa = {self.schedule.rezerwa_count}%')
-        result += (f'  {self.schedule.FIGHT_POKEMON} | 
-             {self.schedule.FIGHT_LOCATION}')
+        result += (f'elm = {self.schedule.elm_status}%')
+        result += (f'rezerwa = {self.schedule.rezerwa_count}%')
+        result += (f'fight_pokemon = {self.schedule.FIGHT_POKEMON} \n' +  
+                   f'fight_location = {self.schedule.FIGHT_LOCATION}')
     
     def print_info(self):
-        BOLD_ON = '\033[1m'
-        BOLD_OFF = '\033[0m'
+      # BOLD_ON, BOLD_OFF = '\033[1m', '\033[0m'
+        BOLD_ON, BOLD_OFF = '*', "*" 
         
         result = "\n"
         for lo, index in enumerate(self.schedule.loc):
@@ -141,7 +178,6 @@ class cmdPrompt:
 
 if __name__ == "__main__":
     cp = cmdPrompt("terminal")
-    asyncio.run(cp.main())
     exit(0)
 
 

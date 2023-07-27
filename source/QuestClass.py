@@ -71,9 +71,9 @@ class Elm:
                     # we found it!
                     print("found location = ", loc[found_id], " |",similiarity_percentage)
                     return found_id
-            return location
+            return "none"
         except:
-            return -1
+            return "none"       # czy aby napewno?
     
     def calculate_avg_len(self, loc):
         sum = 0

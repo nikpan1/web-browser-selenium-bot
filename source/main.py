@@ -13,7 +13,9 @@ from userActions import UserActions
 
 
 class Schedule:
-    def __init__(self, load_img, skip_egg, skip_tutor):
+    def __init__(self, log, psswd, load_img, skip_egg, skip_tutor):
+        self.login = log
+        self.password = psswd
         # settings
         self.load_images = load_img
         self.skip_eggs = skip_egg
@@ -39,10 +41,10 @@ class Schedule:
         self.DEFAULT_FIGHT_LOCATION = 2
         self.rezerwa_count = 0
         
-        self.init_elm()        
+        self.wait_request = False
 
     def init_elm(self):
-        self.login()
+        self.login_setup()
         self.loc = self.elm.find_locations()
         
         self.elm.show_elm()
@@ -64,21 +66,16 @@ class Schedule:
         print("exception_break") 
         self.running = False
 
-    def login(self):
-        import configparser
-        config = configparser.ConfigParser()
-        config.read("config/config.ini")
-        log = config["LOGGING_IN"]["LOGIN"]
-        password = config["LOGGING_IN"]["PASSWORD"]
-
+    def login_setup(self):
         search = self.driver.find_element(By.NAME, "login")
-        search.send_keys(log)
+        search.send_keys(self.login)
 
         search = self.driver.find_element(By.NAME, "pass")
-        search.send_keys(password)
+        search.send_keys(self.password)
 
         search.send_keys(Keys.RETURN)
-        time.sleep(3)
+        time.sleep(1)
+
 
     def fight_pokemon(self):
         pickedPokemon = self.team[self.FIGHT_POKEMON]
@@ -120,20 +117,32 @@ class Schedule:
         if self.st.is_egg() and self.skip_eggs:
             print("Found an egg!(skip)")
             if not self.actions.skip_egg():
-                self.exception_break()
+                self.wait_request = True
         elif self.st.is_egg() and not self.skip_eggs:
             print("Found an egg!")
-            self.exception_break()
+            self.wait_request = True
         elif self.st.is_tm():
             print("TM!")
-            self.exception_break()
+            self.wait_request = True
         elif self.st.is_tma() and self.skip_tutor:
             print("TMA!")
             if not self.actions.skip_tma():
-                self.exception_break()
+                self.wait_request = True
+            else:
+                pass
+                found_tms = ["0", "0"]
+                # get list of TM's 
+                with open("config/TMs", "r") as file:
+                    for line in file:
+                        for tm in found_tms:
+                            if int(tm) == int(line):
+                                # pick that TM 
+                                pass
+
         else:
             print("found new event!")
-            self.exception_break()
+            self.wait_request = True
+            #@TODO screenshot
 
     def manage_elm(self):
         progress = self.elm.get_progress()
