@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 class ItemDatabase:
     def __init__(self, file_path='ItemDatabase.csv'):
         self.file_path = file_path
@@ -21,16 +22,16 @@ class ItemDatabase:
 
     def db_append(self, item, loc):
     # Check if the item already exists in the database
-        if item in database['item_name'].values:
+        if item in self.database['item_name'].values:
         # Increment the item_count by 1
-            database.loc[database['item_name'] == item, 'item_count'] += 1
+            self.database.loc[self.database['item_name'] == item, 'item_count'] += 1
         
         # Check if loc is not already in item_locs, then append it
-        if loc not in database.loc[database['item_name'] == item, 'item_locs'].values[0]:
-            database.loc[database['item_name'] == item, 'item_locs'] += [loc]
+        if loc not in self.database.loc[self.database['item_name'] == item, 'item_locs'].values[0]:
+            self.database.loc[self.database['item_name'] == item, 'item_locs'] += [loc]
         else:
         # If the item doesn't exist, create a new row in the database
             new_row = {'item_name': item, 'item_count': 1, 'item_locs': [loc]}
-            database = database.append(new_row, ignore_index=True)
+            self.database = self.database.append(new_row, ignore_index=True)
 
 
