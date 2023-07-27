@@ -10,7 +10,7 @@ from StatementsClass import Statements
 from PokeballsClass import Throw
 from QuestClass import Elm  
 from userActions import UserActions
-
+from cmdPrompt import make_screenshot
 
 class Schedule:
     def __init__(self, log, psswd, load_img, skip_egg, skip_tutor):
@@ -42,6 +42,8 @@ class Schedule:
         self.rezerwa_count = 0
         
         self.wait_request = False
+        self.wait_img_buffor = " "
+
 
     def init_elm(self):
         self.login_setup()
@@ -98,7 +100,8 @@ class Schedule:
 
     def pokemon_events(self):
         if self.st.is_shiny() or self.st.is_on_whitelist():
-            self.running = False
+            self.wait_request = True
+            self.wait_img_buffor = make_screenshot(self.driver) 
             # @todo coś z tym zrobić
         else:
             self.fight_pokemon()

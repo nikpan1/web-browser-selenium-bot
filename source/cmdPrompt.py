@@ -114,14 +114,21 @@ class cmdPrompt:
             except:
                 await ctx.send("text was *not* found!")
 
-    # Function to send a message to the specified channel in the server
-    async def send_message_to_server(self, server_id, channel_id, message):
+    async def send_message(self, message):
         try:
-            server = client.get_guild(int(server_id))
-        
-            channel = server.get_channel(int(channel_id))
+            server = self.bot.get_guild(int(self.guild_id))
+            channel = server.get_channel(int(self.channel_id))
 
             await channel.send(message)
+        except Exception as e:
+            print(f"Error sending the message: {e}")
+
+    async def send_image(self, filename):
+        try:
+            server = self.bot.get_guild(int(self.guild_id))
+            channel = server.get_channel(int(self.channel_id))
+
+            await channel.send(file = discord.File(filename))
         except Exception as e:
             print(f"Error sending the message: {e}")
 
@@ -138,6 +145,9 @@ class cmdPrompt:
         while True:
             if self.schedule.wait_request:
                 self.running = False
+                if self.schedule.wait_img_buffor != " ":
+                    self.send_image(self.schedule.wait_img_buffor)
+                    self.schedule.wait_img_buffor = " "
                 # send message to dc 
             if self.running:
                 self.schedule.travel()
