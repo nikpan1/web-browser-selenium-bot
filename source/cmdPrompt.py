@@ -144,14 +144,21 @@ class cmdPrompt:
         print("starting main loop")
         while True:
             if self.schedule.wait_request:
+                self.schedule.wait_request = False
                 self.running = False
                 if self.schedule.wait_img_buffor != " ":
-                    self.send_image(self.schedule.wait_img_buffor)
+                    await self.send_image(self.schedule.wait_img_buffor)
                     self.schedule.wait_img_buffor = " "
                 # send message to dc 
             if self.running:
                 self.schedule.travel()
             await asyncio.sleep(0.1)
+
+
+
+
+
+
 
     def print_status(self):
         result = ""
