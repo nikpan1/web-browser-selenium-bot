@@ -20,18 +20,18 @@ class ItemDatabase:
     def save_database(self):
         self.database.to_csv(self.file_path, index=False)
 
-    def db_append(self, item, loc):
+    def db_append(self, item, amount, loc):
     # Check if the item already exists in the database
         if item in self.database['item_name'].values:
         # Increment the item_count by 1
-            self.database.loc[self.database['item_name'] == item, 'item_count'] += 1
-        
-        # Check if loc is not already in item_locs, then append it
-        if loc not in self.database.loc[self.database['item_name'] == item, 'item_locs'].values[0]:
-            self.database.loc[self.database['item_name'] == item, 'item_locs'] += [loc]
+            self.database.loc[self.database['item_name'] == item, 'item_count'] += int(amount)
+
+            # Check if loc is not already in item_locs, then append it
+            if loc not in self.database.loc[self.database['item_name'] == item, 'item_locs'].values[0]:
+                self.database.loc[self.database['item_name'] == item, 'item_locs'] += [loc]
         else:
         # If the item doesn't exist, create a new row in the database
-            new_row = {'item_name': item, 'item_count': 1, 'item_locs': [loc]}
+            new_row = {'item_name': item, 'item_count': int(amount), 'item_locs': [loc]}
             self.database = self.database.append(new_row, ignore_index=True)
 
 

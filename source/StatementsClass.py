@@ -3,10 +3,28 @@ import time
 
 from selenium.webdriver.common.by import By
 
+
 class Statements:
     def __init__(self, driver):
         self.driver = driver
 
+    def found_item(self):
+        try:
+            search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
+            if "Brawo! Podczas w" in search.text:   # wędrówki znalazłeś _ x ___.
+                index = search.text.index("x")
+                item = search.text[(index + 2):(len(search.text - 1))]
+                
+                amount_arr = search.text[:index].split()
+                amount = amount_arr[len(amount_arr) - 1]
+                
+                print(item, amount)
+                return zip(item, amount)
+        except:
+             pass
+        return zip("", "0")
+
+   
     def is_full(self):
         search = self.driver.find_element(By.CLASS_NAME, "rezerwa_info")
         if int(search.text.split(" ")[1]) > 26:

@@ -11,12 +11,14 @@ from PokeballsClass import Throw
 from QuestClass import Elm  
 from userActions import UserActions
 from cmdPrompt import make_screenshot
+from item_database import ItemDatabase
+
 
 class Schedule:
     def __init__(self, log, psswd, load_img, skip_egg, skip_tutor):
         self.login = log
         self.password = psswd
-        # settings
+        # settings     @TODO change to dictionary
         self.load_images = load_img
         self.skip_eggs = skip_egg
         self.skip_tutor = skip_tutor
@@ -43,6 +45,10 @@ class Schedule:
         
         self.wait_request = False
         self.wait_img_buffor = " "
+        self.wait_message = " "
+
+        # database
+        self.db_container = ItemDatabase()
 
 
     def init_elm(self):
@@ -59,14 +65,17 @@ class Schedule:
         while True:
             pk = self.loc[self.FIGHT_POKEMON]
             if not self.actions.hunt(pk):
-                self.exception_break()
+                self.wait_request = True
+                self.exception_break("Init")
             if self.st.is_pokemon():
                 self.team = self.elm.find_team()
                 break
+        
+        self.pokemon_events()
 
-    def exception_break(self):
-        print("exception_break") 
-        self.running = False
+    def exception_break(self, message):
+        self.wait_request = True
+        self.wait_message = "Exception: " + message
 
     def login_setup(self):
         search = self.driver.find_element(By.NAME, "login")
@@ -77,7 +86,6 @@ class Schedule:
 
         search.send_keys(Keys.RETURN)
         time.sleep(1)
-
 
     def fight_pokemon(self):
         pickedPokemon = self.team[self.FIGHT_POKEMON]
@@ -95,32 +103,42 @@ class Schedule:
             cth = self.driver.find_element(By.XPATH, "//a[@href='#wynik_walki']")
             cth.click()
         except:
-            print("exception: fight_pokemon")
-            self.exception_break()
+            self.exception_break("fight_pokemon")
 
     def pokemon_events(self):
         if self.st.is_shiny() or self.st.is_on_whitelist():
+            search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
+            with open("config/shiny", "r") as file:
+                for pokemon in file:
+                    if pokemon in search.text:
+                        print("found exclusive pokemon!")
+
             self.wait_request = True
             self.wait_img_buffor = make_screenshot(self.driver) 
-            # @todo coś z tym zrobić
         else:
             self.fight_pokemon()
             self.pb.throw("Netball")
             self.pb.throw("Levelball")
             self.st.have_item()
 
-    def other_events(self):
-        if self.st.is_end_pa():
+    def other_events(self):     # @TODO big refactor - take the ctx once, and pass it to the st. functions
+        if self.st.is_end_pa():     # what if loc uses 6 PA @TODO 
             self.actions.drink_oak()
 
         self.manage_elm()
-        if self.rezerwa_info() > 80:#%
+        if self.rezerwa_info() > 90:#%
             self.actions.sell_all()
+        
+        item, amount = self.st.found_item()
+        if amount != 0:
+            self.db_container.db_append(item, amount, self.FIGHT_LOCATION)
+            return             
 
         if self.st.is_egg() and self.skip_eggs:
             print("Found an egg!(skip)")
             if not self.actions.skip_egg():
                 self.wait_request = True
+            return 
         elif self.st.is_egg() and not self.skip_eggs:
             print("Found an egg!")
             self.wait_request = True
@@ -141,11 +159,10 @@ class Schedule:
                             if int(tm) == int(line):
                                 # pick that TM 
                                 pass
-
         else:
             print("found new event!")
             self.wait_request = True
-            #@TODO screenshot
+            self.wait_img_buffor = make_screenshot(self.driver) 
 
     def manage_elm(self):
         progress = self.elm.get_progress()
@@ -167,6 +184,8 @@ class Schedule:
                 # check if there is an item to give else:
                 self.FIGHT_LOCATION = quest_loc
 
+            print("Changing location to: ", self.FIGHT_LOCATION)
+
     def travel(self):
         pk = self.loc[self.FIGHT_LOCATION]
         if not self.actions.hunt(pk):
@@ -177,7 +196,7 @@ class Schedule:
         else:
             self.other_events()
 
-    def rezerwa_info(self):
+    def rezerwa_info(self): # @TODO przenieść do Statements
         amount = self.driver.find_element(By.XPATH, "//span[@class='rezerwa-count']")
         self.rezerwa_percentage = 100 * int(amount.text)/30
         return self.rezerwa_percentage
