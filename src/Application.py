@@ -63,7 +63,8 @@ class cmdPrompt:
         async def reset(ctx):
             self.running = False
             self.schedule.loc = self.schedule.elm.find_locations()
-            
+            self.schedule.team = self.schedule.get_team_data()
+
             self.running = True
             await ctx.send("Reseting Location and Pokemon lists:" + self.print_info())
      
@@ -94,7 +95,7 @@ class cmdPrompt:
         async def debug(ctx, text):
             try:
                 cth = self.schedule.driver.find_element(By.XPATH, text) 
-                await ctx.send("text was found!")
+                await ctx.send("text was found!: ", cth.text)
             except:
                 await ctx.send("text was *not* found!")
 
@@ -119,13 +120,13 @@ class cmdPrompt:
     def start(self):
         loop = asyncio.get_event_loop()
         loop.create_task(self.bot_loop())
-        loop.run_until_complete(self.start_bot())
+        loop.run_until_complete(self.start_discord_bot())
  
-    async def start_bot(self):
+    async def start_discord_bot(self):
         await self.bot.start(self.TOKEN)
        
     async def bot_loop(self):
-        print("starting main loop")
+        print("Main loop just started.")
         while True:
             if self.schedule.wait_request:
                 self.schedule.wait_request = False
@@ -133,8 +134,9 @@ class cmdPrompt:
                 if self.schedule.wait_img_buffor != " ":
                     await self.send_image(self.schedule.wait_img_buffor)
                     self.schedule.wait_img_buffor = " "
-            
-            # send message to dc 
+                else:
+                    await self.send_message(self.schedule.wait_message)
+                    self.schedule.wait_message = " "
             if self.running:
                 self.schedule.travel()
             await asyncio.sleep(0.1)

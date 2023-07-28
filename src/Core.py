@@ -4,8 +4,8 @@ from CoreSettings import *
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.service import Service as FirefoxService
-from webdriver_manager.firefox import GeckoDriverManager
+#from selenium.webdriver.firefox.service import Service as FirefoxService
+#from webdriver_manager.firefox import GeckoDriverManager
 
 from pw.StatementsClass import Statements
 from pw.PokeballsClass import Throw
@@ -25,14 +25,7 @@ class Schedule:
         self.skip_eggs = skip_egg
         self.skip_tutor = skip_tutor
         
-        # driver setup      
-        options = webdriver.FirefoxOptions()
-        options.add_argument('--disable-blink-features=AutomationControlled')
-        if not self.load_images:
-            options.set_preference("permissions.default.image", 2)
-        self.driver = webdriver.Firefox(options=options, 
-                                        service=FirefoxService(GeckoDriverManager().install()))
-        self.driver.get(POKEWARS)
+        self.driver = self.get_driver()
 
         self.pb = Throw(self.driver)
         self.st = Statements(self.driver)
@@ -51,34 +44,49 @@ class Schedule:
         # database
         self.db_container = ItemDatabase()
 
+    def get_driver(self):
+        options = webdriver.FirefoxOptions()
+        options.add_argument('--disable-blink-features=AutomationControlled')
+
+        if not self.load_images:
+            options.set_preference("permissions.default.image", 2)
+        firefoxDriver = webdriver.Firefox(options=options)
+                                          #executable_path='ext/drivers/geckodriver')
+                                        # service=FirefoxService(GeckoDriverManager().install()))
+        firefoxDriver.get(POKEWARS)
+        
+        return firefoxDriver
 
     def init_elm(self):
-        self.login_setup()
-        self.loc = self.elm.find_locations()
+        self.login_user()
         
         self.elm.show_elm()
         self.elm_status = self.elm.get_progress()
-        self.elm_location = self.elm.get_daily_quest_info(self.loc)
-        
-        if self.elm_location in self.loc:
-            self.FIGHT_LOCATION = self.loc.index(self.elm_location)
 
+        self.loc = self.elm.find_locations()
+        # self.team = 
+        self.get_team_data()
+
+    def get_team_data(self):
+        #if self.st.is_end_pa:
+        #    self.actions.drink_oak()
+        
         while True:
-            pk = self.loc[self.FIGHT_POKEMON]
-            if not self.actions.hunt(pk):
+            pk = self.loc[0]
+            if not self.actions.hunt(pk):   # if pressing hunt will fail 
                 self.wait_request = True
                 self.exception_break("Init")
             if self.st.is_pokemon():
                 self.team = self.elm.find_team()
                 break
-        
+
         self.pokemon_events()
 
     def exception_break(self, message):
         self.wait_request = True
         self.wait_message = "Exception: " + message
 
-    def login_setup(self):
+    def login_user(self):
         search = self.driver.find_element(By.NAME, "login")
         search.send_keys(self.login)
 
@@ -86,7 +94,7 @@ class Schedule:
         search.send_keys(self.password)
 
         search.send_keys(Keys.RETURN)
-        time.sleep(1)
+        time.sleep(2)
 
     def fight_pokemon(self):
         pickedPokemon = self.team[self.FIGHT_POKEMON]
@@ -110,7 +118,7 @@ class Schedule:
         if self.st.is_shiny() or self.st.is_on_whitelist():
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
             with open(SHINY_DIR, "r") as file:
-                for pokemon in file:
+                for pokemon in file: #@TODO wydzielic i naprawic
                     if pokemon in search.text:
                         print("found exclusive pokemon!")
 
@@ -186,11 +194,12 @@ class Schedule:
                 self.FIGHT_LOCATION = quest_loc
 
             print("Changing location to: ", self.FIGHT_LOCATION)
+            # @TODO refacto manage_elm
 
     def travel(self):
         pk = self.loc[self.FIGHT_LOCATION]
         if not self.actions.hunt(pk):
-            self.exception_break()
+            self.exception_break("travel")
 
         if self.st.is_pokemon():
             self.pokemon_events()

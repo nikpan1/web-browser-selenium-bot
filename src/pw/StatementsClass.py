@@ -1,6 +1,9 @@
 # STATEMENTSCLASS
 from selenium.webdriver.common.by import By
 
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from CoreSettings import *
 
 class Statements:
     def __init__(self, driver):
@@ -71,7 +74,7 @@ class Statements:
         except:
             pass
 
-        with open("config/whitelist", 'r') as file:     # @TODO read the whitelist once
+        with open(WHITELIST_DIR, 'r') as file:     # @TODO read the whitelist once
             pokemon_name = file.readline()
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
             if pokemon_name in search.text:

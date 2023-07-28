@@ -21,7 +21,8 @@ class ItemDatabase:
         self.database.to_csv(self.file_path, index=False)
 
     def db_append(self, item, amount, loc):
-    # Check if the item already exists in the database
+        return 
+        # Check if the item already exists in the database
         if item in self.database['item_name'].values:
         # Increment the item_count by 1
             self.database.loc[self.database['item_name'] == item, 'item_count'] += int(amount)
