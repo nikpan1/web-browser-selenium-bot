@@ -12,13 +12,15 @@ from Screenshooter import make_screenshot
 
 
 class cmdPrompt:
-    def __init__(self, mode):  # terminal | discord
+    def __init__(self, mode):  # @TODO modes: terminal | discord
         self.get_config()
         self.schedule = Schedule(self.login, self.password, True, True, True)
         self.running = False
         
+        # for send message/image without context
         self.guild_id = 0 
         self.channel_id = 0 
+
         self.setup_discord_bot()
         self.discord_input()
        
@@ -42,7 +44,7 @@ class cmdPrompt:
         # event when the Client has established a connection to Discord
         @self.bot.event 
         async def on_ready():
-            print('\nBot is ready!\n')
+            print("Bot is ready!\n")
 
         @self.bot.command()
         async def start(ctx):
@@ -104,7 +106,7 @@ class cmdPrompt:
         except Exception as e:
             print(f"Error sending the message: {e}")
 
-    async def send_image(self, filename):
+    async def send_image(self, filename, message=""):
         try:
             server = self.bot.get_guild(int(self.guild_id))
             channel = server.get_channel(int(self.channel_id))
@@ -130,15 +132,13 @@ class cmdPrompt:
                 if self.schedule.wait_img_buffor != " ":
                     await self.send_image(self.schedule.wait_img_buffor)
                     self.schedule.wait_img_buffor = " "
-                # send message to dc 
+            
+            # send message to dc 
             if self.running:
                 self.schedule.travel()
             await asyncio.sleep(0.1)
 
-
-
-
-
+#____________________
 
 
     def print_status(self):
@@ -180,21 +180,13 @@ if __name__ == "__main__":
 
 
 # niech wybiera tm, nie czeka
-# niech automatycznie wybiera zadanie bierze nowe zadanie  
+# niech automatycznie bierze nowe zadanie  
 
-
-# @TODO remake logging system
 # @TODO zrobić counter znalezionych itemów/złapanych pokemonów
 # @TODO elm quests handling
 # @TODO default settings
 # @TODO filtrowanie rezerwy
 # @TODO przed sprzedażą niech wszystkich ewo
 
-# if text contains "Brawo!" _. you found an item 
-# if "nauczyciela" -> TMA
-# if "Lidera" -> Lider sali
-# EXCEPTION BREAK nie działa
 # zoom out - press ctrl - 2 times on start 
-# if img in daily contains src "img/items/" ->exception break
 # instead of creating a new driver instance, attach it to a active one 
-# if found egg -> input name="poluj"  
