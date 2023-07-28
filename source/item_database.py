@@ -32,6 +32,6 @@ class ItemDatabase:
         else:
         # If the item doesn't exist, create a new row in the database
             new_row = {'item_name': item, 'item_count': int(amount), 'item_locs': [loc]}
-            self.database = self.database.append(new_row, ignore_index=True)
+            self.database = pd.concat([self.database, pd.DataFrame([new_row])], ignore_index=True)
 
 

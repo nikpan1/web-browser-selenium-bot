@@ -1,33 +1,14 @@
 import asyncio
-import os
 import configparser
-from datetime import datetime
 
 import selenium
 from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webdriver import WebDriver
 
 import discord
 from discord.ext import commands
 
 from main import Schedule
-
-
-def make_screenshot(driver: WebDriver, directory: str = "screenshots") -> str:
-    try:
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        filename = f"screenshot_{timestamp}.png"
-        screenshot_path = os.path.join(directory, filename)
-
-        driver.save_screenshot(screenshot_path)
-        return screenshot_path
-    except Exception as e:
-        # Handle any exceptions that might occur during the screenshot process
-        print(f"Error capturing screenshot: {e}")
-        return ""
+from screenshooter import make_screenshot
 
 
 class cmdPrompt:

@@ -19,48 +19,53 @@ class Statements:
                 amount = amount_arr[len(amount_arr) - 1]
                 
                 print(item, amount)
-                return zip(item, amount)
+                return item, amount
         except:
              pass
-        return zip("", "0")
+        return "", "0"
 
    
     def is_full(self):
-        search = self.driver.find_element(By.CLASS_NAME, "rezerwa_info")
-        if int(search.text.split(" ")[1]) > 26:
-            return True
-        return False
+        try:
+            search = self.driver.find_element(By.CLASS_NAME, "rezerwa_info")
+            if int(search.text.split(" ")[1]) > 26:
+                return True
+            return False
+        except:
+            print("exception:is_full")
+            return False
 
     def is_end_pa(self):
-        search = self.driver.find_element(By.XPATH, "//span[@id='action_points_count']")
-        if int(search.text) < 5:
-            return True
-        return False
+        try:
+            search = self.driver.find_element(By.XPATH, "//span[@id='action_points_count']")
+            if int(search.text) < 5:
+                return True
+            return False
+        except:
+            print("exception:is_end_pa")
+            return False 
 
     def have_item(self):
         try:
             search = self.driver.find_element(By.XPATH, "//input[@name='zdejmij_przedmioty']")
             search.click()
         except:
+            # if exception - pokemon doesn't any have iterm
             pass
 
     def is_pokemon(self):
         try:
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
-            #if "dzikiego" in search.text:
-                #print(search.text.split(" ")[-1])
             return "dzikiego" in search.text
         except:
-            pass
-        return False
+            return False
 
     def is_shiny(self):
         try:
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
             return "Shiny" in search.text
         except:
-            pass
-        return False
+            return False
 
     def is_on_whitelist(self):
         try:
@@ -81,12 +86,7 @@ class Statements:
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
             return "drodze trenera" in search.text
         except:
-            pass
-        return False
-
-    def is_empty(self):
-        search = self.driver.find_element(By.XPATH, "//div[@class='alert-box error']")
-        return "nic ciekawego" in search.text
+            return False
 
     def is_egg(self):
         try:
@@ -101,49 +101,40 @@ class Statements:
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
             return "etyczne" in search.text
         except:
-            pass
-        return False
+            return False
 
     def is_porosnieta_ska(self):
         try:
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
             return "poczu" in search.text
         except:
-            pass
-        return False
+            return False
 
     def is_tm(self):
         try:
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
             return "Lidera Sali" in search.text
         except:
-            pass
-        return False
+            return False
 
     def is_tma(self):
         try:
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
             return "nauczyciela" in search.text
         except:
-            pass
-        return False
-
+            return False
 
     def if_this_pokemon(self, pokemon="aaaaa"):
         try:
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
             return pokemon in search.text
         except:
-            pass
-        return False
+            return False
 
     def if_is_alola(self):
         try:
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
             return "Alola" in search.text
         except:
-            pass
-        return False
+            return False
 
-    def is_healthy(self):
-        pass

@@ -10,7 +10,7 @@ from StatementsClass import Statements
 from PokeballsClass import Throw
 from QuestClass import Elm  
 from userActions import UserActions
-from cmdPrompt import make_screenshot
+from screenshooter import make_screenshot
 from item_database import ItemDatabase
 
 
