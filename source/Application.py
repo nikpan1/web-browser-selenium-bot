@@ -8,6 +8,7 @@ import discord
 from discord.ext import commands
 
 from Core import Schedule
+from CoreSettings import *
 from Screenshooter import make_screenshot
 
 
@@ -30,7 +31,7 @@ class cmdPrompt:
     def get_config(self):
         # load token from config.ini
         config = configparser.ConfigParser()
-        config.read("config/config.ini")
+        config.read(CONFIG_FILE)
 
         self.TOKEN = config["DISCORD"]["TOKEN"]
         self.login = config["LOGGING_IN"]["LOGIN"]

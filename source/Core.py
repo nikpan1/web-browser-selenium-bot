@@ -1,4 +1,5 @@
 ﻿import time
+from CoreSettings import *
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -24,8 +25,7 @@ class Schedule:
         self.skip_eggs = skip_egg
         self.skip_tutor = skip_tutor
         
-        # driver setup
-        POKEWARS = "https://pokewars.pl"        
+        # driver setup      
         options = webdriver.FirefoxOptions()
         options.add_argument('--disable-blink-features=AutomationControlled')
         if not self.load_images:
@@ -109,7 +109,7 @@ class Schedule:
     def pokemon_events(self):
         if self.st.is_shiny() or self.st.is_on_whitelist():
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
-            with open("config/shiny", "r") as file:
+            with open(SHINY_DIR, "r") as file:
                 for pokemon in file:
                     if pokemon in search.text:
                         print("found exclusive pokemon!")
@@ -154,7 +154,7 @@ class Schedule:
                 pass
                 found_tms = ["0", "0"]
                 # get list of TM's 
-                with open("config/TMs", "r") as file:
+                with open(TMS_DIR, "r") as file:
                     for line in file:
                         for tm in found_tms:
                             if int(tm) == int(line):

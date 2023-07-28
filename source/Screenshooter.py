@@ -2,9 +2,9 @@ from datetime import datetime
 import os
 import selenium
 from selenium.webdriver.remote.webdriver import WebDriver
+from CoreSettings import *
 
-
-def make_screenshot(driver: WebDriver, directory: str = "screenshots") -> str:
+def make_screenshot(driver: WebDriver, directory: str = SCREENSHOTS_DIR) -> str:
     try:
         if not os.path.exists(directory):
             os.makedirs(directory)

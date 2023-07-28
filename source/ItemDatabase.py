@@ -1,8 +1,8 @@
 import pandas as pd
-
+from CoreSettings import *
 
 class ItemDatabase:
-    def __init__(self, file_path='ItemDatabase.csv'):
+    def __init__(self, file_path=DATABASE_DIR):
         self.file_path = file_path
         self.load_database()
 
