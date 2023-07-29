@@ -1,9 +1,17 @@
 import pandas as pd
 from CoreSettings import *
+import os
+
+def create_empty_file(file_path):
+    if not os.path.exists(file_path):
+        with open(file_path, 'w'):
+            pass  # This creates an empty file
+
 
 class ItemDatabase:
     def __init__(self, file_path=DATABASE_DIR):
         self.file_path = file_path
+      # create_empty_file(file_path)
         self.load_database()
 
     def __del__(self):
@@ -12,7 +20,7 @@ class ItemDatabase:
     def load_database(self):
         try:
             self.database = pd.read_csv(self.file_path)
-        except FileNotFoundError:
+        except:
             # If the file does not exist, create an empty database
             data = {'item_name': [], 'item_count': [], 'item_locs': []}
             self.database = pd.DataFrame(data)
@@ -21,7 +29,6 @@ class ItemDatabase:
         self.database.to_csv(self.file_path, index=False)
 
     def db_append(self, item, amount, loc):
-        return 
         # Check if the item already exists in the database
         if item in self.database['item_name'].values:
         # Increment the item_count by 1
@@ -35,4 +42,7 @@ class ItemDatabase:
             new_row = {'item_name': item, 'item_count': int(amount), 'item_locs': [loc]}
             self.database = pd.concat([self.database, pd.DataFrame([new_row])], ignore_index=True)
 
-
+if __name__ == "__main__":
+    db = ItemDatabase("dt.csv")
+    db.db_append("test_item", 9, "lokacja")
+    db.save_database()
