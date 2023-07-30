@@ -98,7 +98,13 @@ class cmdPrompt:
                 await ctx.send("text was found!: ", cth.text)
             except:
                 await ctx.send("text was *not* found!")
+        
+        @self.bot.command()
+        async def login(ctx):
+            self.schedule.login_user()
+            await ctx.send("Logged in!")
 
+    
     async def send_message(self, message):
         try:
             server = self.bot.get_guild(int(self.guild_id))

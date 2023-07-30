@@ -40,6 +40,9 @@ class Schedule:
         self.wait_request = False
         self.wait_img_buffor = " "
         self.wait_message = " "
+        
+        self.message_request = False
+        self.message_buffor = " "
 
         # database
         self.db_container = ItemDatabase()
@@ -135,7 +138,7 @@ class Schedule:
             self.actions.drink_oak()
 
         self.manage_elm()
-        if self.rezerwa_info() > 90:#%
+        if self.rezerwa_info() > 80:#%
             self.actions.sell_all()
         
         item, amount = self.st.found_item()
@@ -166,7 +169,10 @@ class Schedule:
                     for line in file:
                         for tm in found_tms:
                             if int(tm) == int(line):
-                                # pick that TM 
+                                # pick that TM
+                                # iterate through class="box light-blue round center"
+                                # input class="niceButton big"
+
                                 pass
         else:
             print("found new event!")
@@ -176,15 +182,22 @@ class Schedule:
     def manage_elm(self):
         progress = self.elm.get_progress()
         if progress == -1:
+            # check if can press elm - if yes -> manage elm()
+            # else there isnt a task
             print("new quest needed")
             #self.elm.new_quest()
             progress = self.elm.get_progress()
             if progress == -1:
                 print("manage_elm")
                 
-        if self.elm_status != progress:
+        if self.elm_status != progress:     # it means it started a new quest part 
+            
+            # check what exact part -> 
+                # if last part and prize > 100kY 
+                # if last and contains in tekst "oddaj"
+                #div class = action-name
+                # "Przynieś przedmiot z Warsztatu"
             self.elm_status = progress
-            print("quest part ended!")
 
             quest_loc = self.elm.get_daily_quest_info(self.loc)
             if quest_loc == "none":
@@ -193,8 +206,8 @@ class Schedule:
                 # check if there is an item to give else:
                 self.FIGHT_LOCATION = quest_loc
 
-            print("Changing location to: ", self.FIGHT_LOCATION)
-            # @TODO refacto manage_elm
+            self.message_request = True
+            self.message_buffor = f"Changing location to {self.FIGHT_LOCATION}: "
 
     def travel(self):
         pk = self.loc[self.FIGHT_LOCATION]
