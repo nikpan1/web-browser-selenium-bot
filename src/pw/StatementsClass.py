@@ -132,10 +132,10 @@ class Statements:
         except:
             return False
 
-    def if_is_alola(self):
+    def is_alola_challange(self):
         try:
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
-            return "Alola" in search.text
+            return "regionu Alola" in search.text
         except:
             return False
 

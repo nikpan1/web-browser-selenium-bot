@@ -17,13 +17,14 @@ from ItemDatabase import ItemDatabase
 
 
 class Schedule:
-    def __init__(self, log, psswd, load_img, skip_egg, skip_tutor):
+    def __init__(self, log, psswd, load_img, skip_egg, skip_tutor, instant_sell_rez = True):
         self.login = log
         self.password = psswd
         # settings     @TODO change to dictionary
         self.load_images = load_img
         self.skip_eggs = skip_egg
         self.skip_tutor = skip_tutor
+        self.skip_sell_rezerwa = instant_sell_rez
         
         self.driver = self.get_driver()
 
@@ -141,6 +142,9 @@ class Schedule:
         if self.rezerwa_info() > 80:#%
             self.actions.sell_all()
         
+        if self.st.is_alola_challange():
+            self.exception_break("alola!")
+
         item, amount = self.st.found_item()
         if amount != 0:
             self.db_container.db_append(item, amount, self.FIGHT_LOCATION)
