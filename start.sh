@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Activate the virtual environment
-source pokewars/bin/activate
+source ext/venv_pw/bin/activate 
 
 # Run the Python script
-python source/main.py
+python src/Application.py
 
