@@ -32,24 +32,21 @@ class UserActions:
             # form id="tm-trade-form-698"
             titles = self.driver.find_elements(By.XPATH, "//form[contains(@id, 'tm-trade-form')]")
             print("titles", len(titles))
-            parent_objs = titles.find_elements(By.XPATH, "..")
-            print("parents", len(titles))
+            parent_objs = [title.find_element(By.XPATH, "..") for title in titles]
+            print("parents", len(parent_objs))
             # input class="niceButton big"
-            buttons = parent_objs.find_elements(By.XPATH, "//input[@class='niceButton big']")
+            buttons = [parent_obj.find_element(By.XPATH, "//input[@class='niceButton big']") for parent_obj in parent_objs]
             # span style="font-size: 18px; font-weight: bold;"
-            TM_ids = parent_objs.find_elements(By.XPATH, "//span[@style='font-size: 18px; font-weight: bold;']")
+            TM_ids = [parent_obj.find_elements(By.XPATH, "//span[@style='font-size: 18px; font-weight: bold;']") for parent_obj in parent_objs]
             
-            TM_val = [0] * len(TM_ids)
-            for index, tm in enumerate(TM_ids):
-                TM_val[index] = int(tm.text.split(' ')[1])
+            TM_values = [ int(tm.text.split(' ')[1]) for tm in TM_ids]
 
             found_tm_index = 0 
-            
             # find in file the most expensive TM found
             with open(TMS_DIR, 'r') as file:     
                 val = int(file.readline())
-                if val in TM_val:
-                    found_tm_index = TM_val.index(val)
+                if val in TM_values:
+                    found_tm_index = TM_values.index(val)
                     file.close()
 
             # buy the best option / or the first one 

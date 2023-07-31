@@ -14,9 +14,6 @@ class ItemDatabase:
       # create_empty_file(file_path)
         self.load_database()
 
-    def __del__(self):
-        self.save_database()
-
     def load_database(self):
         try:
             self.database = pd.read_csv(self.file_path)
@@ -24,6 +21,7 @@ class ItemDatabase:
             # If the file does not exist, create an empty database
             data = {'item_name': [], 'item_count': [], 'item_locs': []}
             self.database = pd.DataFrame(data)
+            create_empty_file(self.file_path)
 
     def save_database(self):
         self.database.to_csv(self.file_path, index=False)
@@ -42,8 +40,10 @@ class ItemDatabase:
             # If the item doesn't exist, create a new row in the database
             new_row = {'item_name': item, 'item_count': int(amount), 'item_locs': [loc]}
             self.database = pd.concat([self.database, pd.DataFrame([new_row])], ignore_index=True)
+        
+        self.save_database()
 
 if __name__ == "__main__":
-    db = ItemDatabase("dt.csv")
+    db = ItemDatabase("data/database/item_database.csv")
     db.db_append("test_item", 9, "lokacja")
-    db.save_database()
+
