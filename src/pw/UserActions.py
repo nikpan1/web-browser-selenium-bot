@@ -1,6 +1,8 @@
 from selenium.webdriver.common.by import By
 import time
 
+TMS_DIR = "data/TMs"
+
 class UserActions:
     def __init__(self, driv):
         self.driver = driv
@@ -24,6 +26,45 @@ class UserActions:
         except:
             print("exception: skip_tma")
             return 0
+
+    def pick_tm(self):
+        try:
+            # form id="tm-trade-form-698"
+            titles = self.driver.find_elements(By.XPATH, "//form[contains(@id, 'tm-trade-form')]")
+            print("titles", len(titles))
+            parent_objs = titles.find_elements(By.XPATH, "..")
+            print("parents", len(titles))
+            # input class="niceButton big"
+            buttons = parent_objs.find_elements(By.XPATH, "//input[@class='niceButton big']")
+            # span style="font-size: 18px; font-weight: bold;"
+            TM_ids = parent_objs.find_elements(By.XPATH, "//span[@style='font-size: 18px; font-weight: bold;']")
+            
+            TM_val = [0] * len(TM_ids)
+            for index, tm in enumerate(TM_ids):
+                TM_val[index] = int(tm.text.split(' ')[1])
+
+            found_tm_index = 0 
+            
+            # find in file the most expensive TM found
+            with open(TMS_DIR, 'r') as file:     
+                val = int(file.readline())
+                if val in TM_val:
+                    found_tm_index = TM_val.index(val)
+                    file.close()
+
+            # buy the best option / or the first one 
+            buttons[found_tm_index].click()
+            
+            # accept
+            # button class="vex-dialog-button-primary vex-dialog-button vex-first"
+            time.sleep(1)
+            cth = self.driver.find_element(By.XPATH, "//button[@class='vex-dialog-button-primary vex-dialog-button vex-first']")
+            cth.click()
+
+            return 1
+        except:
+            return 0
+
 
     def skip_egg(self):
         try:

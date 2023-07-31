@@ -91,6 +91,9 @@ class Schedule:
         self.wait_message = "Exception: " + message
 
     def login_user(self):
+        time.sleep(10)
+        self.actions.pick_tm()
+        time.sleep(5)
         search = self.driver.find_element(By.NAME, "login")
         search.send_keys(self.login)
 
