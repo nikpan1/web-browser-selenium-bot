@@ -36,6 +36,7 @@ class Elm:
         cth.click()
         cth = self.driver.find_element(By.XPATH, "//a[@href='/codzienne']")
         cth.click()
+
         action = self.driver.find_element(By.XPATH, "//input[@name='use_daily_ticket']")
         action.click()
         # może przeczytaj ile to będzie kosztować

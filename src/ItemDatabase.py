@@ -45,5 +45,5 @@ class ItemDatabase:
 
 if __name__ == "__main__":
     db = ItemDatabase("data/database/item_database.csv")
-    db.db_append("test_item", 9, "lokacja")
+    db.db_append("test2_item", 9, "test_loc")
 

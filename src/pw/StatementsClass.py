@@ -13,17 +13,20 @@ class Statements:
         try:
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
             if "Brawo! Podczas w" in search.text:   # wędrówki znalazłeś _ x ___.
-                index = search.text.index("x")
-                item = search.text[(index + 2):(len(search.text - 1))]
-                
-                amount_arr = search.text[:index].split()
-                amount = amount_arr[len(amount_arr) - 1]
-                
-                print(item, amount)
+                i = search.text.index("x") + 1
+                item = search.text[i:-1]
+                print("item:", item)
+
+                amount_arr = search.text[:i].split()
+                amount = amount_arr[-1]
+                print("amount: ", amount)
+
+                print("found item: ", item, amount)
                 return item, amount
-        except:
-             pass
-        return "", "0"
+        except Exception as e:
+            # Exception handling code
+            print("An error occurred[found_item]:", e)
+            return "", "0"
 
    
     def is_full(self):
