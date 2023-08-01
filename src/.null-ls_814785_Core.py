@@ -1,4 +1,4 @@
-﻿import time
+import time
 from CoreSettings import *
 
 from selenium import webdriver

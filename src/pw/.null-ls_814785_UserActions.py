@@ -41,8 +41,10 @@ class UserActions:
             print(len(TM_ids))
             
             print("EOOO\n")
-            print("- - ", TM_ids[0][1].text)
-            TM_values = [tm.text.split(' ')[1] for tm in TM_ids[0]]
+            print("\n", TM_ids[0].text, "\n")
+            print("EOOO\n")
+
+            TM_values = [ tm.text for tm in TM_ids]
 
             print(TM_values)
 
@@ -50,14 +52,12 @@ class UserActions:
             # find in file the most expensive TM found
             with open(TMS_DIR, 'r') as file:
                 while True:
-                    line = file.readline()
-                    val = line.strip()
-                    print("|", val, "|")
+                    val = int(file.readline())
                     if not val:
                         break
                     elif val in TM_values:
                         found_tm_index = TM_values.index(val)
-                        print("found: ",val)
+                        print(val)
                         break 
 
             # buy the best option / or the first one 
@@ -70,10 +70,21 @@ class UserActions:
             cth.click()
 
             return 1
-        except Exception as e:
-            # Exception handling code
-            print("An error occurred:", e)
-        
+       
+lf.execute(Command.FIND_ELEMENT, {"using": by, "value": value})["value"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/nikodem/Documents/Github/web-browser-selenium-bot/ext/venv_pokewars/lib/python3.11/site-packages/selenium/webdriver/remote/webdriver.py", line 345, in execute
+    self.error_handler.check_response(response)
+  File "/home/nikodem/Documents/Github/web-browser-selenium-bot/ext/venv_pokewars/lib/python3.11/site-packages/selenium/webdriver/remote/errorhandler.py", line 229, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.NoSuchElementException: Message: Unable to locate element: [name="login"]; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+RemoteError@chrome://remote/content/shared/RemoteError.sys.mjs:8:8
+WebDriverError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:187:5
+NoSuchElementError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:505:5
+element.find/</<@chrome://remote/content/marionette/element.sys.mjs:135:16
+
+
             return 0
 
 
