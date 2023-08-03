@@ -83,10 +83,7 @@ class cmdPrompt:
 
         @self.bot.command()
         async def show(ctx, arg):
-            if arg == "img":
-                filepath = make_screenshot(self.schedule.driver)
-                await ctx.send(file = discord.File(filepath))
-            elif arg == "list":
+            if arg == "list":
                 await ctx.send(self.print_info())
             elif arg == "status":
                 await ctx.send(self.print_status())

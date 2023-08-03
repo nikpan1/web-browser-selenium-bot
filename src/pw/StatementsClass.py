@@ -23,6 +23,8 @@ class Statements:
 
                 print("found item: ", item, amount)
                 return item, amount
+            else:
+                return " ", 0
         except Exception as e:
             # Exception handling code
             print("An error occurred[found_item]:", e)
