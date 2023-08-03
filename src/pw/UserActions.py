@@ -41,8 +41,10 @@ class UserActions:
             print(len(TM_ids))
             
             print("EOOO\n")
-            print("- - ", TM_ids[0][1].text)
-            TM_values = [tm.text.split(' ')[1] for tm in TM_ids[0]]
+            print("\n", TM_ids[0].text, "\n")
+            print("EOOO\n")
+
+            TM_values = [ tm.text for tm in TM_ids]
 
             print(TM_values)
 
@@ -50,14 +52,12 @@ class UserActions:
             # find in file the most expensive TM found
             with open(TMS_DIR, 'r') as file:
                 while True:
-                    line = file.readline()
-                    val = line.strip()
-                    print("|", val, "|")
+                    val = int(file.readline())
                     if not val:
                         break
                     elif val in TM_values:
                         found_tm_index = TM_values.index(val)
-                        print("found: ",val)
+                        print(val)
                         break 
 
             # buy the best option / or the first one 
@@ -70,10 +70,7 @@ class UserActions:
             cth.click()
 
             return 1
-        except Exception as e:
-            # Exception handling code
-            print("An error occurred:", e)
-        
+        except:
             return 0
 
 

@@ -72,7 +72,7 @@ class Schedule:
         self.get_team_data()
 
     def get_team_data(self):
-        if self.st.is_end_pa:
+        if self.st.is_end_pa():
             self.actions.drink_oak()
         
         while True:
@@ -91,10 +91,6 @@ class Schedule:
         self.wait_message = "Exception: " + message
 
     def login_user(self):
-        time.sleep(10)
-        self.actions.pick_tm()
-        time.sleep(5)
-        
         search = self.driver.find_element(By.NAME, "login")
         search.send_keys(self.login)
 
@@ -126,10 +122,18 @@ class Schedule:
         if self.st.is_shiny() or self.st.is_on_whitelist():
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
             with open(SHINY_DIR, "r") as file:
-                for pokemon in file: #@TODO wydzielic i naprawic
-                    if pokemon in search.text:
-                        print("found exclusive pokemon!: ", pokemon)
-                        file.close()
+                while True:
+                    val = file.readline()
+                    if not val:
+                        break
+                    
+                    val = val.strip()
+                    
+                    if val in search.text:
+                        print("found exclusice pokemon: ", val)
+                        # next: catch with repeatball
+                        # last: go to rezerwa and take caught pokemon to pokebox
+                        break 
 
             self.wait_request = True
             self.wait_img_buffor = make_screenshot(self.driver) 
@@ -150,11 +154,6 @@ class Schedule:
         if self.st.is_alola_challange():
             self.exception_break("alola!")
 
-        item, amount = self.st.found_item()
-        if amount != 0:
-            self.db_container.db_append(item, amount, self.FIGHT_LOCATION)
-            return             
-
         if self.st.is_egg() and self.skip_eggs:
             print("Found an egg!(skip)")
             if not self.actions.skip_egg():
@@ -165,28 +164,28 @@ class Schedule:
             self.wait_request = True
         elif self.st.is_tm():
             print("TM!")
-            self.wait_request = True
+            result = self.actions.pick_tm()
+            if result == 0:
+                self.wait_request = True
         elif self.st.is_tma() and self.skip_tutor:
             print("TMA!")
+            time.sleep(0)
             if not self.actions.skip_tma():
                 self.wait_request = True
             else:
-                pass
-                found_tms = ["0", "0"]
-                # get list of TM's 
-                with open(TMS_DIR, "r") as file:
-                    for line in file:
-                        for tm in found_tms:
-                            if int(tm) == int(line):
-                                # pick that TM
-                                # iterate through class="box light-blue round center"
-                                # input class="niceButton big"
+                pass # ?
 
-                                pass
-        else:
-            print("found new event!")
-            self.wait_request = True
-            self.wait_img_buffor = make_screenshot(self.driver) 
+        if self.st.is_trainer():
+            pass
+        return
+        item, amount = self.st.found_item()
+        if amount != 0:
+            self.db_container.db_append(item, amount, self.FIGHT_LOCATION)
+            return             
+#else:
+        #    print("found new event!")
+        #    self.wait_request = True
+        #    self.wait_img_buffor = make_screenshot(self.driver) 
 
     def manage_elm(self):
         progress = self.elm.get_progress()

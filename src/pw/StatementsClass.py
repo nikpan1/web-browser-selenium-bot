@@ -14,20 +14,20 @@ class Statements:
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
             if "Brawo! Podczas w" in search.text:   # wędrówki znalazłeś _ x ___.
                 i = search.text.index("x") + 1
+                
                 item = search.text[i:-1]
-                print("item:", item)
+                item = item.strip()
 
-                amount_arr = search.text[:i].split()
+                amount_arr = search.text[:(i - 2)].split()
                 amount = amount_arr[-1]
-                print("amount: ", amount)
 
                 print("found item: ", item, amount)
                 return item, amount
         except Exception as e:
             # Exception handling code
             print("An error occurred[found_item]:", e)
-            return "", "0"
-
+            return " ", 0
+        
    
     def is_full(self):
         try:
@@ -42,7 +42,7 @@ class Statements:
     def is_end_pa(self):
         try:
             search = self.driver.find_element(By.XPATH, "//span[@id='action_points_count']")
-            if int(search.text) < 5:
+            if int(search.text) < 7:
                 return True
             return False
         except:
