@@ -1,2 +1,12 @@
 item_name,item_count,item_locs
-test_item,36.0,['lokacja']
+Greatball,9.0,['miasto_wyndon']
+Poke chrupki,54.0,['miasto_wyndon']
+Diveball,5.0,['miasto_wyndon']
+Parkball,13.0,['miasto_wyndon']
+Sportball,19.0,['miasto_wyndon']
+Lureball,13.0,['miasto_wyndon']
+money,2.0,['miasto_wyndon']
+Moonball,5.0,['miasto_wyndon']
+Klucz Elma,1.0,['miasto_wyndon']
+Probówka,3.0,['miasto_wyndon']
+Netball,3.0,['miasto_wyndon']

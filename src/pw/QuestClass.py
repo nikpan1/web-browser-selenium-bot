@@ -45,8 +45,9 @@ class Elm:
         try:
             cth = self.driver.find_element(By.XPATH, "//div[@title='Zadanie codzienne']")
             cth.click()
+            return 1
         except:
-            print("nie naduszono elm")
+            return 0
 
     def get_progress(self):
         active = 0

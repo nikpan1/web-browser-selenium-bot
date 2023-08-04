@@ -13,6 +13,10 @@ class Statements:
         try:
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
             if "Brawo! Podczas w" in search.text:   # wędrówki znalazłeś _ x ___.
+                # if found money -> skip
+                if "¥" in search.text:
+                    return "money", 1
+
                 i = search.text.index("x") + 1
                 
                 item = search.text[i:-1]
@@ -22,14 +26,66 @@ class Statements:
                 amount = amount_arr[-1]
 
                 print("found item: ", item, amount)
-                return item, amount
+                return item, int(amount)
             else:
                 return " ", 0
-        except Exception as e:
-            # Exception handling code
-            print("An error occurred[found_item]:", e)
+        except:
             return " ", 0
-        
+    
+    def is_trying_not_right(self):
+        # Nie masz wyst.
+        try:
+            search = self.driver.find_element(By.XPATH, "//div[@class='alert-box error']")
+            if "Nie masz wyst" in search.text or "Nie posiadasz Pok" in search.text:
+                return True
+            else:
+                return False 
+        except:
+            return False
+
+    def met_trader(self):
+        # wymieni
+        try:
+            search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
+            if "wymieni" in search.text:
+                return True
+            else:
+                return False 
+        except:
+            return False
+   
+    def is_PA_event(self):
+        # Regenerujesz  | Tracisz
+        try:
+            search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
+            if "Regenerujesz" in search.text or "Tracisz" in search.text:
+                return True
+            else:
+                return False 
+        except:
+            return False
+   
+
+    def found_nothing_interesting(self):
+        #nic ciekawego.
+        try:
+            search = self.driver.find_element(By.XPATH, "//div[@class='alert-box error']")
+            if "nic ciekawego." in search.text:
+                return True
+            else:
+                return False 
+        except:
+            return False
+      
+    def is_team(self):
+        try:
+            search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
+            if "eam" in search.text:
+                return True
+            else:
+                return False 
+        except:
+            return False
    
     def is_full(self):
         try:

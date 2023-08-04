@@ -150,7 +150,10 @@ class Schedule:
         self.manage_elm()
         if self.rezerwa_info() > 80:#%
             self.actions.sell_all()
-        
+
+
+        item, amount = self.st.found_item()
+ 
         if self.st.is_alola_challange():
             self.exception_break("alola!")
 
@@ -174,37 +177,46 @@ class Schedule:
                 self.wait_request = True
             else:
                 pass # ?
-
-        if self.st.is_trainer():
+        elif self.st.is_trainer():
             pass
-        return
-        item, amount = self.st.found_item()
-        if amount != 0:
-            self.db_container.db_append(item, amount, self.FIGHT_LOCATION)
-            return             
-#else:
-        #    print("found new event!")
-        #    self.wait_request = True
-        #    self.wait_img_buffor = make_screenshot(self.driver) 
-
+        elif amount != 0:
+            self.db_container.db_append(item, amount, self.loc[self.FIGHT_LOCATION])
+            return
+        elif self.st.is_team():
+            self.wait_request = True
+        elif self.st.found_nothing_interesting():
+            #print("nothing interesting")
+            pass
+        elif self.st.is_trying_not_right():
+            # dlaczego to się kurde odpala? @TODO
+            pass
+        elif self.st.is_PA_event():
+            pass 
+        elif self.st.met_trader():
+            # skip
+            pass 
+        else:
+            print("found new event!")
+            self.wait_request = True
+            self.wait_img_buffor = make_screenshot(self.driver) 
+    
     def manage_elm(self):
         progress = self.elm.get_progress()
         if progress == -1:
-            # check if can press elm - if yes -> manage elm()
-            # else there isnt a task
-            print("new quest needed")
-            #self.elm.new_quest()
+            if not self.elm.show_elm():
+                self.wait_request = True
+                self.wait_message = "I need a new quest"
+                print("new quest needed")
+            
             progress = self.elm.get_progress()
             if progress == -1:
                 print("manage_elm")
                 
         if self.elm_status != progress:     # it means it started a new quest part 
+            # if prize > 100.000 and last task:
+            #   wait request - "end of quest"
+            # if "Oddaj przedmiot" in wybrana akcja ?
             
-            # check what exact part -> 
-                # if last part and prize > 100kY 
-                # if last and contains in tekst "oddaj"
-                #div class = action-name
-                # "Przynieś przedmiot z Warsztatu"
             self.elm_status = progress
 
             quest_loc = self.elm.get_daily_quest_info(self.loc)

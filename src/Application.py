@@ -101,13 +101,13 @@ class cmdPrompt:
             self.schedule.login_user()
             await ctx.send("Logged in!")
 
-#        @self.bot.command()
-#        async def help(ctx):
-#            with open("commandList.txt", "r") as file:
-#                file_content = file.read()
-#                await ctx.send(file_content)
+        @self.bot.command()
+        async def help_me(ctx):
+            with open("src/commandList.txt", "r") as file:
+                file_content = file.read()
+                await ctx.send(file_content)
     
-    async def send_message(self, message):
+    async def send_message(self, message: str):
         try:
             server = self.bot.get_guild(int(self.guild_id))
             channel = server.get_channel(int(self.channel_id))
@@ -116,7 +116,7 @@ class cmdPrompt:
         except Exception as e:
             print(f"Error sending the message: {e}")
 
-    async def send_image(self, filename, message=""):
+    async def send_image(self, filename):
         try:
             server = self.bot.get_guild(int(self.guild_id))
             channel = server.get_channel(int(self.channel_id))
@@ -142,7 +142,7 @@ class cmdPrompt:
                 if self.schedule.wait_img_buffor != " ":
                     await self.send_image(self.schedule.wait_img_buffor)
                     self.schedule.wait_img_buffor = " "
-                else:
+                elif self.schedule.wait_message != " ":
                     await self.send_message(self.schedule.wait_message)
                     self.schedule.wait_message = " "
             if self.running:
