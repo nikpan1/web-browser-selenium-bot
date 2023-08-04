@@ -101,6 +101,11 @@ class cmdPrompt:
             self.schedule.login_user()
             await ctx.send("Logged in!")
 
+#        @self.bot.command()
+#        async def help(ctx):
+#            with open("commandList.txt", "r") as file:
+#                file_content = file.read()
+#                await ctx.send(file_content)
     
     async def send_message(self, message):
         try:

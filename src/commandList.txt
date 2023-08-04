@@ -1,3 +1,8 @@
+# Discord bot commands
+
+!help
+Retrieves the help information about every command.
+
 !reboot
 Reboots pokewars process and relogins in case 
 something crashed or bot was logged out.
