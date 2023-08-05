@@ -124,7 +124,7 @@ class Schedule:
             with open(SHINY_DIR, "r") as file:
                 while True:
                     val = file.readline()
-                    if not val:
+                    if not val or val == " ":
                         break
                     
                     val = val.strip()
@@ -134,6 +134,7 @@ class Schedule:
                         # next: catch with repeatball
                         # last: go to rezerwa and take caught pokemon to pokebox
                         break 
+                    # if not found lets ust quickball(?)
 
             self.wait_request = True
             self.wait_img_buffor = make_screenshot(self.driver) 
@@ -220,7 +221,7 @@ class Schedule:
             self.elm_status = progress
 
             quest_loc = self.elm.get_daily_quest_info(self.loc)
-            if quest_loc == "none":
+            if quest_loc == "none":                                                 # is it working?
                 self.FIGHT_LOCATION = self.DEFAULT_FIGHT_LOCATION  
             else:
                 # check if there is an item to give else:

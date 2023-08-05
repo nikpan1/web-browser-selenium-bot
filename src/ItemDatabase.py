@@ -30,12 +30,19 @@ class ItemDatabase:
         # Check if the item already exists in the database
         if item in self.database['item_name'].values:
             # Increment the item_count by the provided amount
-            self.database.loc[self.database['item_name'] == item, 'item_count'] += int(amount)
+            self.database.loc[self.database['item_name'] == item, 'item_count'] += int(amount)# Assuming self.database['item_locs'] contains strings initially
             
+            # Convert the existing values to lists
+            self.database['item_locs'] = self.database['item_locs'].apply(lambda x: [x] if isinstance(x, str) else x)
+
             # Check if loc is not already in item_locs, then append it
-            if loc not in self.database.loc[self.database['item_name'] == item, 'item_locs'].values[0]:
-                self.database.loc[self.database['item_name'] == item, 'item_locs'] = \
-                    self.database.loc[self.database['item_name'] == item, 'item_locs'].apply(lambda x: x + [loc])
+            item_filter = self.database['item_name'] == item
+            item_locs = self.database.loc[item_filter, 'item_locs'].values[0]
+
+            if loc not in item_locs:
+                item_locs.append(loc)
+                self.database.loc[item_filter, 'item_locs'] = item_locs
+
         else:
             # If the item doesn't exist, create a new row in the database
             new_row = {'item_name': item, 'item_count': int(amount), 'item_locs': [loc]}
