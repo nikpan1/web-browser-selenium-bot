@@ -19,7 +19,7 @@ class ItemDatabase:
             self.database = pd.read_csv(self.file_path)
         except:
             # If the file does not exist, create an empty database
-            data = {'item_name': [], 'item_count': [], 'item_locs': []}
+            data = {'item_name': ["test_name"], 'item_count': [1], 'item_locs': [["loc1", "loc2"]]}
             self.database = pd.DataFrame(data)
             create_empty_file(self.file_path)
 
@@ -27,27 +27,21 @@ class ItemDatabase:
         self.database.to_csv(self.file_path, index=False)
 
     def db_append(self, item, amount, loc):
+        return
         # Check if the item already exists in the database
         if item in self.database['item_name'].values:
-            # Increment the item_count by the provided amount
-            self.database.loc[self.database['item_name'] == item, 'item_count'] += int(amount)# Assuming self.database['item_locs'] contains strings initially
-            
-            # Convert the existing values to lists
-            self.database['item_locs'] = self.database['item_locs'].apply(lambda x: [x] if isinstance(x, str) else x)
+            item_index = self.database.index[self.database['item_name'] == item][0]
+            item_locs = eval(self.database.loc[item_index, 'item_locs'])
 
             # Check if loc is not already in item_locs, then append it
-            item_filter = self.database['item_name'] == item
-            item_locs = self.database.loc[item_filter, 'item_locs'].values[0]
-
             if loc not in item_locs:
                 item_locs.append(loc)
-                self.database.loc[item_filter, 'item_locs'] = item_locs
-
+                self.database.at[item_index, 'item_locs'] = str(item_locs)
         else:
             # If the item doesn't exist, create a new row in the database
             new_row = {'item_name': item, 'item_count': int(amount), 'item_locs': [loc]}
-            self.database = pd.concat([self.database, pd.DataFrame([new_row])], ignore_index=True)
-        
+            self.database = self.database.append(new_row, ignore_index=True)
+               
         self.save_database()
 
 if __name__ == "__main__":

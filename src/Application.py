@@ -106,7 +106,7 @@ class cmdPrompt:
             with open("src/commandList.txt", "r") as file:
                 file_content = file.read()
                 await ctx.send(file_content)
-    
+        
     async def send_message(self, message: str):
         try:
             server = self.bot.get_guild(int(self.guild_id))

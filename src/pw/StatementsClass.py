@@ -8,7 +8,15 @@ from CoreSettings import *
 class Statements:
     def __init__(self, driver):
         self.driver = driver
-
+    
+    def is_fained(self):
+        # div class box gray round center not-full-health 
+        try:
+            search = self.driver.find_element(By.XPATH, "//div[@class='box gray round center not-full-health']")
+        except:
+            return False
+        return True 
+        
     def found_item(self):
         try:
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
@@ -16,7 +24,8 @@ class Statements:
                 # if found money -> skip
                 if "¥" in search.text:
                     return "money", 1
-
+                #if "ball" in search.text or "Berry" in search.text:
+                #    return " ", 0
                 i = search.text.index("x") + 1
                 
                 item = search.text[i:-1]
@@ -36,7 +45,7 @@ class Statements:
         # Nie masz wyst.
         try:
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box error']")
-            if "Nie masz wyst" in search.text or "Nie posiadasz Pok" in search.text:
+            if "Bilety wymagane" in search.text or "Nie masz wyst" in search.text or "Nie posiadasz Pok" in search.text:
                 return True
             else:
                 return False 

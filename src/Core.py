@@ -24,8 +24,8 @@ class Schedule:
         self.load_images = load_img
         self.skip_eggs = skip_egg
         self.skip_tutor = skip_tutor
-        self.skip_sell_rezerwa = instant_sell_rez
-        
+        self.sell_instant_full_rezerwa = instant_sell_rez
+
         self.driver = self.get_driver()
 
         self.pb = Throw(self.driver)
@@ -62,6 +62,10 @@ class Schedule:
         return firefoxDriver
 
     def init_elm(self):
+        time.sleep(5)
+        self.actions.pick_tm()
+        time.sleep(5)
+
         self.login_user()
         
         self.elm.show_elm()
@@ -119,6 +123,9 @@ class Schedule:
             self.exception_break("fight_pokemon")
 
     def pokemon_events(self):
+        if self.st.is_fained():
+            self.actions.heal_all()
+
         if self.st.is_shiny() or self.st.is_on_whitelist():
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
             with open(SHINY_DIR, "r") as file:
@@ -150,13 +157,16 @@ class Schedule:
 
         self.manage_elm()
         if self.rezerwa_info() > 80:#%
-            self.actions.sell_all()
-
+            if self.sell_instant_full_rezerwa:
+                self.actions.sell_all()
+            else:
+                self.wait_message = "rezerwa full!"
+                self.wait_request = True
 
         item, amount = self.st.found_item()
  
-        if self.st.is_alola_challange():
-            self.exception_break("alola!")
+#        if self.st.is_alola_challange():
+#            self.exception_break("alola!")
 
         if self.st.is_egg() and self.skip_eggs:
             print("Found an egg!(skip)")
@@ -173,11 +183,20 @@ class Schedule:
                 self.wait_request = True
         elif self.st.is_tma() and self.skip_tutor:
             print("TMA!")
-            time.sleep(0)
+            pk = self.loc[0]
+            self.actions.hunt(pk)   
+            
             if not self.actions.skip_tma():
                 self.wait_request = True
             else:
                 pass # ?
+
+            if self.st.is_pokemon():
+                self.pokemon_events()
+            else:
+                self.other_events()
+
+
         elif self.st.is_trainer():
             pass
         elif amount != 0:
