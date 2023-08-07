@@ -20,6 +20,7 @@ class Schedule:
     def __init__(self, log, psswd, load_img, skip_egg, skip_tutor, instant_sell_rez = True):
         self.login = log
         self.password = psswd
+
         # settings     @TODO change to dictionary
         self.load_images = load_img
         self.skip_eggs = skip_egg
@@ -34,8 +35,8 @@ class Schedule:
         self.actions = UserActions(self.driver)
 
         self.FIGHT_POKEMON = 3
-        self.FIGHT_LOCATION = 2 
-        self.DEFAULT_FIGHT_LOCATION = 2
+        self.FIGHT_LOCATION = 0 
+        self.DEFAULT_FIGHT_LOCATION = 3
         self.rezerwa_count = 0
         
         self.wait_request = False
@@ -62,10 +63,6 @@ class Schedule:
         return firefoxDriver
 
     def init_elm(self):
-        time.sleep(5)
-        self.actions.pick_tm()
-        time.sleep(5)
-
         self.login_user()
         
         self.elm.show_elm()
