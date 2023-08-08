@@ -16,6 +16,7 @@ class cmdPrompt:
     def __init__(self, mode):  # @TODO modes: terminal | discord
         self.get_config()
         self.schedule = Schedule(self.login, self.password, False, True, True)
+
         self.running = False
         
         # for send message/image without context
