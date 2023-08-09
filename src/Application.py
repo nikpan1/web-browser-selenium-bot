@@ -15,7 +15,7 @@ from Screenshooter import make_screenshot
 class cmdPrompt:
     def __init__(self, mode):  # @TODO modes: terminal | discord
         self.get_config()
-        self.schedule = Schedule(self.login, self.password, True, True, True, True, True)
+        self.schedule = Schedule(self.login, self.password, False, True, True, True, True)
 
         self.running = False
         
@@ -191,14 +191,10 @@ if __name__ == "__main__":
     exit(0)
 
 
-# niech wybiera tm, nie czeka
+# @TODO
 # niech automatycznie bierze nowe zadanie  
-
-# @TODO zrobić counter znalezionych itemów/złapanych pokemonów
-# @TODO elm quests handling
-# @TODO default settings
-# @TODO filtrowanie rezerwy
-# @TODO przed sprzedażą niech wszystkich ewo
-
-# zoom out - press ctrl - 2 times on start 
+# filtrowanie rezerwy i przed sprzedażą niech wszystkich ewo
 # instead of creating a new driver instance, attach it to a active one 
+
+
+
