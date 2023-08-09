@@ -17,15 +17,16 @@ from ItemDatabase import ItemDatabase
 
 
 class Schedule:
-    def __init__(self, log, psswd, load_img, skip_egg, skip_tutor, instant_sell_rez = True):
+    def __init__(self, log, psswd, load_img, skip_egg, skip_tutor, instant_sell_rez, ign_elm):
         self.login = log
         self.password = psswd
-
+        
         # settings     @TODO change to dictionary
         self.load_images = load_img
         self.skip_eggs = skip_egg
         self.skip_tutor = skip_tutor
         self.sell_instant_full_rezerwa = instant_sell_rez
+        self.ignore_elm = ign_elm
 
         self.driver = self.get_driver()
 
@@ -117,7 +118,7 @@ class Schedule:
             cth = self.driver.find_element(By.XPATH, "//a[@href='#wynik_walki']")
             cth.click()
         except:
-            self.exception_break("fight_pokemon")
+            print("except:fight_pokemon")
 
     def pokemon_events(self):
         if self.st.is_fained():
@@ -213,14 +214,15 @@ class Schedule:
             # skip
             pass 
         else:
-            print("found new event!")
-            self.wait_request = True
-            self.wait_img_buffor = make_screenshot(self.driver) 
+            pass
+            #print("found new event!")
+            #self.wait_request = True
+            #self.wait_img_buffor = make_screenshot(self.driver) 
     
     def manage_elm(self):
         progress = self.elm.get_progress()
         if progress == -1:
-            if not self.elm.show_elm():
+            if not self.elm.show_elm() and not self.ignore_elm:
                 self.wait_request = True
                 self.wait_message = "I need a new quest"
                 print("new quest needed")

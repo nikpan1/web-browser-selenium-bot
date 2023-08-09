@@ -15,11 +15,11 @@ class UserActions:
             poluj.click()
             return 1 
         except:
+            return 1
             print("exception: hunt")
             return 0
 
     def skip_tma(self):
-        time.sleep(1)
         try:
             cth = self.driver.find_element(By.XPATH, "//button[@class='vex-dialog-button-primary vex-dialog-button vex-first']")
             cth.click()
@@ -41,32 +41,32 @@ class UserActions:
             TM_ids = [parent_obj.find_elements(By.XPATH, "//span[@style='font-size: 18px; font-weight: bold;']") for parent_obj in parent_objs]
             print(len(TM_ids))
             
-            TM_values = [ int(tm.text.strip().split()[1]) for tm in TM_ids[0]]
+            print("EOOO\n")
+            print("\n", TM_ids[0].text, "\n")
+            print("EOOO\n")
+
+            TM_values = [ tm.text for tm in TM_ids]
 
             print(TM_values)
 
-            found_tm_index = 0
-            
-            searching = True
+            found_tm_index = 0 
             # find in file the most expensive TM found
             with open(TMS_DIR, 'r') as file:
-                while searching:
-                    val = int(file.readline().strip())
-                    print(val)
+                while True:
+                    val = int(file.readline())
                     if not val:
                         break
                     elif val in TM_values:
                         found_tm_index = TM_values.index(val)
-                        print("picked TM:", val)
-                        break
-                searching = False
+                        print(val)
+                        break 
 
             # buy the best option / or the first one 
             buttons[found_tm_index].click()
-
+            
             # accept
             # button class="vex-dialog-button-primary vex-dialog-button vex-first"
-            time.sleep(1)
+            time.sleep(2)
             cth = self.driver.find_element(By.XPATH, "//button[@class='vex-dialog-button-primary vex-dialog-button vex-first']")
             cth.click()
 
