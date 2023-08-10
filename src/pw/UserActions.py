@@ -34,7 +34,6 @@ class UserActions:
             cth = self.driver.find_element(By.XPATH, "//input[@class='niceButton big_padding red center']")
             cth.click()
 
-
             self.skip_tma()
             return 1
         except:

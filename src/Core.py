@@ -134,13 +134,14 @@ class Schedule:
                     
                     val = val.strip()
                     
-                    if val in search.text:
+                    if val in search.text and val != " ":
                         print("found exclusice pokemon: ", val)
+                        
                         # next: catch with repeatball
                         # last: go to rezerwa and take caught pokemon to pokebox
                         break 
                     # if not found lets ust quickball(?)
-
+            
             self.wait_request = True
             self.wait_img_buffor = make_screenshot(self.driver) 
         else:
@@ -168,12 +169,19 @@ class Schedule:
 
         if self.st.is_egg():
             print("Found an egg!(skip)")
-            if not self.actions.skip_egg():
-                self.actions.get_egg()
+            if not self.skip_eggs:
+                print("egg - waiting")
+                self.wait_message = "found an egg"
                 self.wait_request = True
             else:
-                print("Found an egg!")
-                self.wait_request = True
+                if not self.actions.skip_egg():
+                    self.actions.get_egg()
+                    self.wait_request = True
+                else:
+                    print("Found an egg!")
+                    self.wait_message = "found an egg" 
+                    self.wait_request = True
+
         elif self.st.is_tm():
             print("TM!")
             result = self.actions.pick_tm()
@@ -232,7 +240,6 @@ class Schedule:
                     self.manage_elm()
 
         if self.elm_status != progress:     # it means it started a new quest part 
-            
             if self.elm.is_warsztat_quest():
                 self.exception_break("Last task is warsztat")
                 #
