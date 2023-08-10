@@ -113,7 +113,11 @@ class cmdPrompt:
             with open("src/commandList.txt", "r") as file:
                 file_content = file.read()
                 await ctx.send(file_content)
-        
+ 
+        @self.bot.command()
+        async def reset_daily(ctx):
+            self.schedule.elm.daily_cords = [0, 0]
+            await ctx.send("daily pos was reseted.")       
     async def send_message(self, message: str):
         try:
             server = self.bot.get_guild(int(self.guild_id))

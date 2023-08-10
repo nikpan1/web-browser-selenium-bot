@@ -107,7 +107,7 @@ class Elm:
         except:
             return 0
     
-    def is_warsztat_quest(self)
+    def is_warsztat_quest(self):
         try:
             cth = self.driver.find_element(By.XPATH, "//div[@title='action-name']")
             print(cth.text)
