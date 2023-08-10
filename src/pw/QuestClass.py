@@ -1,10 +1,36 @@
 from selenium.webdriver.common.by import By
+#from recorder import * 
+from pynput.mouse import Controller, Listener, Button
+import time
+
+def wait_for_mouse_click():
+    global cords
+    cords = [0,0]
+    def on_click(x, y, button, pressed):
+        if pressed and button == Button.left:
+            cords[0] = x
+            cords[1] = y
+            # Stop listening for mouse events
+            listener.stop()
+
+    # Create a listener for mouse events
+    with Listener(on_click=on_click) as listener:
+        listener.join()
+    
+    return cords 
+
+def press_pos(x, y):
+    mouse = Controller()
+
+    mouse.position = (x, y)
+    mouse.click(Button.left)
 
 
 class Elm:
     def __init__(self, driver):
         self.driver = driver
         self.old_text = None
+        self.daily_cords = [0, 0]
 
     def find_locations(self):
         lokacje = []
@@ -29,6 +55,7 @@ class Elm:
             source = elem.get_attribute('name')
             team.append(source)
         return team
+    
 
     def new_quest(self):
         # a id = "learn-arrow-miasto" a href="/codzienne"
@@ -36,10 +63,41 @@ class Elm:
         cth.click()
         cth = self.driver.find_element(By.XPATH, "//a[@href='/codzienne']")
         cth.click()
+        
+        # class="niceButton full_width big_padding"
+        
+        cth = self.driver.find_element(By.XPATH, "//input[@class='niceButton full_width big_padding']")
+        cth.click()
+        
+        time.sleep(2)
 
-        action = self.driver.find_element(By.XPATH, "//input[@name='use_daily_ticket']")
-        action.click()
-        # może przeczytaj ile to będzie kosztować
+        try:
+            # class="vex-dialog-buttons"
+            popup = self.driver.find_element(By.XPATH, "//div[@class='vex-dialog-buttons']")
+            print("o")
+            # class="vex-dialog-button-primary vex-dialog-button vex-first"
+            accept = popup.find_element(By.XPATH, "//button[@class='vex-dialog-button-primary vex-dialog-button vex-first']")
+            accept.click()
+            return 1
+        except:
+            print("new quest ups")
+            return 0 
+
+        return 1
+
+    def quest_difficulty(self):
+        time.sleep(5) # wait until the popup vanishes
+        if self.daily_cords == [0,0]:
+            self.daily_cords[0], self.daily_cords[1] = wait_for_mouse_click()
+        
+        press_pos(self.daily_cords[0], self.daily_cords[1])
+             
+        try:
+            cth = self.driver.find_element(By.XPATH, "//input[@class='niceButton orange full_width big']")
+            cth.click()
+            return 1
+        except:
+            return 0
 
     def show_elm(self):
         try:
@@ -48,17 +106,29 @@ class Elm:
             return 1
         except:
             return 0
+    
+    def is_warsztat_quest(self)
+        try:
+            cth = self.driver.find_element(By.XPATH, "//div[@title='action-name']")
+            print(cth.text)
+            if "przedmiot z Warsztatu" in cth.text:
+                return 1
+            
+            # @TODO następnie niech sprawdza czy może oddać C:
+
+        except:
+            return 0
+        return 0
 
     def get_progress(self):
-        active = 0
+        active = -1
         try:
             tasks = self.driver.find_element(By.XPATH, "//div[@class='action-to-choose current selected']")
             active = int(tasks.text)
         except:
-            return -1
+            return -1 
 
         return active
-
 
     def get_daily_quest_info(self, loc):
         try:

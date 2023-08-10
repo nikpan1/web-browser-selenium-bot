@@ -6,7 +6,17 @@ TMS_DIR = "data/TMs"
 class UserActions:
     def __init__(self, driv):
         self.driver = driv
+    
+    def skip_tma(self):     # @TODO skip_tma -> skip
+        try:
+            cth = self.driver.find_element(By.XPATH, "//button[@class='vex-dialog-button-primary vex-dialog-button vex-first']")
+            cth.click()
+            return 1
+        except:
+            print("exception: skip_tma")
+            return 0
 
+ 
     def hunt(self, hunt_location):
         try:
             # click the picked location button
@@ -18,16 +28,19 @@ class UserActions:
             return 1
             print("exception: hunt")
             return 0
-
-    def skip_tma(self):
+    
+    def get_egg(self):
         try:
-            cth = self.driver.find_element(By.XPATH, "//button[@class='vex-dialog-button-primary vex-dialog-button vex-first']")
+            cth = self.driver.find_element(By.XPATH, "//input[@class='niceButton big_padding red center']")
             cth.click()
+
+
+            self.skip_tma()
             return 1
         except:
-            print("exception: skip_tma")
+            print("exception: get egg")
             return 0
-
+       
     def pick_tm(self):
         try:
             # form id="tm-trade-form-698"
@@ -41,39 +54,38 @@ class UserActions:
             TM_ids = [parent_obj.find_elements(By.XPATH, "//span[@style='font-size: 18px; font-weight: bold;']") for parent_obj in parent_objs]
             print(len(TM_ids))
             
-            print("EOOO\n")
-            print("\n", TM_ids[0].text, "\n")
-            print("EOOO\n")
-
-            TM_values = [ tm.text for tm in TM_ids]
+            TM_values = [ int(tm.text.strip().split()[1]) for tm in TM_ids[0]]
 
             print(TM_values)
 
-            found_tm_index = 0 
+            found_tm_index = 0
+            
+            searching = True
             # find in file the most expensive TM found
             with open(TMS_DIR, 'r') as file:
-                while True:
-                    val = int(file.readline())
+                while searching:
+                    val = int(file.readline().strip())
+                    print(val)
                     if not val:
                         break
                     elif val in TM_values:
                         found_tm_index = TM_values.index(val)
-                        print(val)
-                        break 
+                        print("picked TM:", val)
+                        break
+                searching = False
 
             # buy the best option / or the first one 
             buttons[found_tm_index].click()
-            
+
             # accept
             # button class="vex-dialog-button-primary vex-dialog-button vex-first"
-            time.sleep(2)
+            time.sleep(1)
             cth = self.driver.find_element(By.XPATH, "//button[@class='vex-dialog-button-primary vex-dialog-button vex-first']")
             cth.click()
 
             return 1
         except:
             return 0
-
 
     def skip_egg(self):
         try:

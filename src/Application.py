@@ -11,11 +11,14 @@ from Core import Schedule
 from CoreSettings import *
 from Screenshooter import make_screenshot
 
+# @RTODO
+# kupować zaddania codzienne za ph
+# niech oddaje przedmiot z warsztatu jak możę
 
 class cmdPrompt:
     def __init__(self, mode):  # @TODO modes: terminal | discord
         self.get_config()
-        self.schedule = Schedule(self.login, self.password, False, True, True, True, True)
+        self.schedule = Schedule(self.login, self.password, True, False, True, True, True)
 
         self.running = False
         
@@ -64,7 +67,9 @@ class cmdPrompt:
         async def reset(ctx):
             self.running = False
             self.schedule.loc = self.schedule.elm.find_locations()
-            self.schedule.team = self.schedule.get_team_data()
+            self.schedule.get_team_data()
+            
+            self.schedule.manage_elm()
 
             self.running = True
             await ctx.send("Reseting Location and Pokemon lists:" + self.print_info())
@@ -74,6 +79,7 @@ class cmdPrompt:
             self.schedule.FIGHT_POKEMON = int(fight)
             self.schedule.DEFAULT_FIGHT_LOCATION = int(loc)
             self.schedule.FIGHT_LOCATION = int(loc)
+            self.schedule.manage_elm()
             await ctx.send(f"Pokemon = {self.schedule.team[self.schedule.FIGHT_POKEMON]}\n" + 
                            f"Location = {self.schedule.loc[self.schedule.FIGHT_LOCATION]}")
 

@@ -65,13 +65,13 @@ class Schedule:
 
     def init_elm(self):
         self.login_user()
+
+        self.loc = self.elm.find_locations()
+        self.get_team_data()
         
         self.elm.show_elm()
         self.elm_status = self.elm.get_progress()
-
-        self.loc = self.elm.find_locations()
-        # self.team = 
-        self.get_team_data()
+        self.manage_elm()
 
     def get_team_data(self):
         if self.st.is_end_pa():
@@ -166,14 +166,14 @@ class Schedule:
 #        if self.st.is_alola_challange():
 #            self.exception_break("alola!")
 
-        if self.st.is_egg() and self.skip_eggs:
+        if self.st.is_egg():
             print("Found an egg!(skip)")
             if not self.actions.skip_egg():
+                self.actions.get_egg()
                 self.wait_request = True
-            return 
-        elif self.st.is_egg() and not self.skip_eggs:
-            print("Found an egg!")
-            self.wait_request = True
+            else:
+                print("Found an egg!")
+                self.wait_request = True
         elif self.st.is_tm():
             print("TM!")
             result = self.actions.pick_tm()
@@ -222,20 +222,21 @@ class Schedule:
     def manage_elm(self):
         progress = self.elm.get_progress()
         if progress == -1:
-            if not self.elm.show_elm() and not self.ignore_elm:
-                self.wait_request = True
-                self.wait_message = "I need a new quest"
+            print("progress -1")
+            if not self.elm.show_elm(): #and not self.ignore_elm:
                 print("new quest needed")
-            
-            progress = self.elm.get_progress()
-            if progress == -1:
-                print("manage_elm")
-                
+                if not self.elm.new_quest():        # a za ph?
+                    self.exception_break("new quest")
+                else:
+                    self.elm.quest_difficulty()
+                    self.manage_elm()
+
         if self.elm_status != progress:     # it means it started a new quest part 
-            # if prize > 100.000 and last task:
-            #   wait request - "end of quest"
-            # if "Oddaj przedmiot" in wybrana akcja ?
             
+            if self.elm.is_warsztat_quest():
+                self.exception_break("Last task is warsztat")
+                #
+
             self.elm_status = progress
 
             quest_loc = self.elm.get_daily_quest_info(self.loc)
