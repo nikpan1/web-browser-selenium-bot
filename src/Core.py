@@ -36,8 +36,8 @@ class Schedule:
         self.actions = UserActions(self.driver)
 
         self.FIGHT_POKEMON = 3
-        self.FIGHT_LOCATION = 0 
-        self.DEFAULT_FIGHT_LOCATION = 3
+        self.FIGHT_LOCATION = 5
+        self.DEFAULT_FIGHT_LOCATION = 5
         self.rezerwa_count = 0
         
         self.wait_request = False
@@ -234,7 +234,7 @@ class Schedule:
             if not self.elm.show_elm(): #and not self.ignore_elm:
                 print("new quest needed")
                 if not self.elm.new_quest():        # a za ph?
-                    self.exception_break("new quest")
+                    self.exception_break("new quest needed")
                 else:
                     self.elm.quest_difficulty()
                     self.manage_elm()
