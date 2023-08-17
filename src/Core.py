@@ -236,7 +236,7 @@ class Schedule:
                 if not self.elm.new_quest():        # a za ph?
                     self.exception_break("new quest needed")
                 else:
-                    self.elm.quest_difficulty()
+                    #self.elm.quest_difficulty()
                     self.manage_elm()
 
         if self.elm_status != progress:     # it means it started a new quest part 
