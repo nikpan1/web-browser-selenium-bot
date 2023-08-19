@@ -167,6 +167,7 @@ class Schedule:
 
         if self.st.is_egg():
             print("Found an egg!(skip)")
+
             if not self.skip_eggs:
                 print("egg - waiting")
                 self.wait_message = "found an egg 1"

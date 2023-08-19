@@ -1,6 +1,6 @@
-- warsztat
-- elm 
-- exclusive
+- catch exclusive/common
+- db
+- elm new daily 
+- check if is last task is warsztat
+- skip egg?
 
-- settings dict
-- 1 process -> get info like elm status, pokemon health status etc
