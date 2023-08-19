@@ -126,29 +126,27 @@ class Schedule:
 
         if self.st.is_shiny() or self.st.is_on_whitelist():
             search = self.driver.find_element(By.XPATH, "//div[@class='alert-box info']")
+            
             with open(SHINY_DIR, "r") as file:
                 while True:
                     val = file.readline()
-                    if not val or val == " ":
-                        break
-                    
                     val = val.strip()
-                    
-                    if val in search.text and val != " ":
-                        print("found exclusice pokemon: ", val)
-                        
-                        # next: catch with repeatball
-                        # last: go to rezerwa and take caught pokemon to pokebox
-                        break 
-                    # if not found lets ust quickball(?)
-            
+                
+                    if not val or val == " ":
+                        print("booho")
+                        break
+                    elif val in message and val != " ":
+                        print("found exclusice pokemon: |", val, "| ")
+                        break    
             self.wait_request = True
-            self.wait_img_buffor = make_screenshot(self.driver) 
+            self.wait_img_buffor = make_screenshot(self.driver)
+
         else:
             self.fight_pokemon()
             self.pb.throw("Netball")
             self.pb.throw("Levelball")
             self.st.have_item()
+    
 
     def other_events(self):     # @TODO big refactor - take the ctx once, and pass it to the st. functions
         if self.st.is_end_pa():     # what if loc uses 6 PA @TODO 
@@ -171,7 +169,7 @@ class Schedule:
             print("Found an egg!(skip)")
             if not self.skip_eggs:
                 print("egg - waiting")
-                self.wait_message = "found an egg"
+                self.wait_message = "found an egg 1"
                 self.wait_request = True
             else:
                 if not self.actions.skip_egg():
@@ -179,7 +177,7 @@ class Schedule:
                     self.wait_request = True
                 else:
                     print("Found an egg!")
-                    self.wait_message = "found an egg" 
+                    self.wait_message = "found an egg 2" 
                     self.wait_request = True
 
         elif self.st.is_tm():

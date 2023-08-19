@@ -6,7 +6,7 @@ TMS_DIR = "data/TMs"
 class UserActions:
     def __init__(self, driv):
         self.driver = driv
-    
+
     def skip_tma(self):     # @TODO skip_tma -> skip
         try:
             cth = self.driver.find_element(By.XPATH, "//button[@class='vex-dialog-button-primary vex-dialog-button vex-first']")
@@ -15,7 +15,6 @@ class UserActions:
         except:
             print("exception: skip_tma")
             return 0
-
  
     def hunt(self, hunt_location):
         try:
@@ -120,4 +119,4 @@ class UserActions:
     def drink_oak(self):
         search = self.driver.find_element(By.XPATH, "//img[@title='Wypij Napój Profesora Oaka']")
         search.click()
-
+    
