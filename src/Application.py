@@ -135,6 +135,12 @@ class cmdPrompt:
             await channel.send(file = discord.File(filename))
         except Exception as e:
             print(f"Error sending the message: {e}")
+    
+    async def catch(self, type):
+        if type == "common":
+            self.schedule.catch_common()
+        elif type == "rare":
+            self.schedule.catch_rare()
 
     def start(self):
         loop = asyncio.get_event_loop()

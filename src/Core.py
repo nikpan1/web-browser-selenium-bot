@@ -269,4 +269,15 @@ class Schedule:
         self.rezerwa_percentage = 100 * int(amount.text)/30
         return self.rezerwa_percentage
 
+    def catch_rare(self):
+
+        self.pb.throw("Netball")
+        while self.pb.throw("Repeatball"):
+            pass 
+
+    def catch_common(self):
+        self.pb.throw("Netball")
+        self.pb.throw("Quickball")
+
+
 
