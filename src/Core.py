@@ -135,7 +135,7 @@ class Schedule:
                     if not val or val == " ":
                         print("booho")
                         break
-                    elif val in message and val != " ":
+                    elif val in search.text and val != " ":
                         print("found exclusice pokemon: |", val, "| ")
                         break    
             self.wait_request = True
@@ -166,21 +166,14 @@ class Schedule:
 #            self.exception_break("alola!")
 
         if self.st.is_egg():
-            print("Found an egg!(skip)")
-
-            if not self.skip_eggs:
-                print("egg - waiting")
-                self.wait_message = "found an egg 1"
-                self.wait_request = True
+            print("Found an egg!")
+            if self.skip_eggs:
+                success = self.actions.skip_egg()
+                if not success:
+                    self.exception_break("egg")
             else:
-                if not self.actions.skip_egg():
-                    self.actions.get_egg()
-                    self.wait_request = True
-                else:
-                    print("Found an egg!")
-                    self.wait_message = "found an egg 2" 
-                    self.wait_request = True
-
+                self.wait_message = "Go get the egg!"
+                self.wait_request = True 
         elif self.st.is_tm():
             print("TM!")
             result = self.actions.pick_tm()
