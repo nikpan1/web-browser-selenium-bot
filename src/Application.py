@@ -18,7 +18,7 @@ from Screenshooter import make_screenshot
 class cmdPrompt:
     def __init__(self, mode):  # @TODO modes: terminal | discord
         self.get_config()
-        self.schedule = Schedule(self.login, self.password, True, True, True, True, True)
+        self.schedule = Schedule(self.login, self.password, True, True, True, False, True)
 
         self.running = False
         
