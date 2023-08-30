@@ -155,7 +155,12 @@ class Schedule:
         self.manage_elm()
         if self.rezerwa_info() > 80:#%
             if self.sell_instant_full_rezerwa:
+                success = self.actions.evolve_all()
+                if not success:
+                    self.exception_break("sell_all")
+
                 self.actions.sell_all()
+
             else:
                 self.wait_message = "rezerwa full!"
                 self.wait_request = True

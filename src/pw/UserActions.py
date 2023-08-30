@@ -7,6 +7,28 @@ class UserActions:
     def __init__(self, driv):
         self.driver = driv
 
+    def evolve_all(self):
+        
+        cth = self.driver.find_element(By.XPATH, "//a[@id='learn-arrow-pokemony']")
+        cth.click()
+        cth = self.driver.find_element(By.XPATH, "//a[@href='/druzyna']")
+        cth.click()
+        
+        try:
+            target_text = "Ewolucja"
+
+            # Find elements by searching for the target text in their content
+            elements_with_target_text = self.driver.find_elements(By.XPATH, f"//*[contains(text(), '{target_text}')]")
+            print("reo")
+            print(len(elements_with_target_text))
+            for element in elements_with_target_text:
+                time.sleep(0.5)
+                element.click()
+
+            return True 
+        except:
+            return False
+
     def skip_tma(self):     # @TODO skip_tma -> skip
         try:
             cth = self.driver.find_element(By.XPATH, "//button[@class='vex-dialog-button-primary vex-dialog-button vex-first']")
