@@ -1,3 +1,5 @@
+
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 import time
 
@@ -8,12 +10,11 @@ class UserActions:
         self.driver = driv
 
     def evolve_all(self):
-        
         cth = self.driver.find_element(By.XPATH, "//a[@id='learn-arrow-pokemony']")
         cth.click()
         cth = self.driver.find_element(By.XPATH, "//a[@href='/druzyna']")
         cth.click()
-        
+
         try:
             target_text = "Ewolucja"
 
@@ -21,9 +22,15 @@ class UserActions:
             elements_with_target_text = self.driver.find_elements(By.XPATH, f"//*[contains(text(), '{target_text}')]")
             print("reo")
             print(len(elements_with_target_text))
+            
+
             for element in elements_with_target_text:
-                time.sleep(0.5)
+                element_to_hover = element.find_element_by_xpath("..")
+                actions = ActionChains(self.driver)
+                actions.move_to_element(element_to_hover).perform()
+                
                 element.click()
+                time.sleep(0.5)
 
             return True 
         except:
