@@ -14,27 +14,29 @@ class UserActions:
         cth.click()
         cth = self.driver.find_element(By.XPATH, "//a[@href='/druzyna']")
         cth.click()
-
-        try:
+        print("1-")
+        time.sleep(10)
+        print("2-")
+        #try
+        if True:
             target_text = "Ewolucja"
 
             # Find elements by searching for the target text in their content
             elements_with_target_text = self.driver.find_elements(By.XPATH, f"//*[contains(text(), '{target_text}')]")
-            print("reo")
-            print(len(elements_with_target_text))
+            print("ren=", len(elements_with_target_text))
             
 
             for element in elements_with_target_text:
-                element_to_hover = element.find_element_by_xpath("..")
-                actions = ActionChains(self.driver)
-                actions.move_to_element(element_to_hover).perform()
-                
-                element.click()
-                time.sleep(0.5)
+                try:
+                    self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
+                    element.click()
+                except:
+                    print("huh")
 
+                time.sleep(1)
             return True 
-        except:
-            return False
+        #except:
+        #    return False
 
     def skip_tma(self):     # @TODO skip_tma -> skip
         try:
