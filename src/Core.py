@@ -224,6 +224,7 @@ class Schedule:
             #self.wait_img_buffor = make_screenshot(self.driver) 
     
     def manage_elm(self):
+        return
         progress = self.elm.get_progress()
         if progress == -1:
             print("progress -1")
