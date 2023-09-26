@@ -1,0 +1,52 @@
+# Discord bot commands
+
+!help
+Retrieves the help information about every command.
+
+!reboot
+Reboots pokewars process and relogins in case 
+something crashed or bot was logged out.
+
+!login
+Logins the user, used in case the session expired.
+
+!start
+Starts hunting in choosen location with choosen pokemon,
+if elm quest detected, then the location accordingly changes.
+
+!stop
+Stops the hunting sessions.
+
+!reset
+Reconfigures the pokemon and hunt list,
+in case someone changed the mentioned lists.
+
+!set
+Sets the most important settings in form:
+-
+- set x y
+-
+where x - pokemon index, y - hunt location.
+
+!screenshot
+Makes a screenshot of the currently working driver.
+
+!show
+Gives information about the working bot.
+-
+- shot x
+-
+where x can be:
+- - list
+- and it returns the list of location and pokemons,
+- - status
+- gives the information about the settings.
+
+
+!debug
+It is for debugging selenium purposes.
+-
+- debug par
+-
+where par is the XPATH searched by the app.
+
