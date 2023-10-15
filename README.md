@@ -3,14 +3,15 @@ Project was realized for fun and sentiment.
 It's an fully automated bot for a webrowser game with a lot of features.
 
 # Features 
+- Bot handles almost every event possible to appear in the game, if it finds a new event, it reports it in the terminal and saves it.
 - Projected headless with the possiblity to use:
 - - GUI written in PyGame,
 - - terminal interface,
 - - through a remote communication using Discord.
-
+- Fast end efficient -- the bot is optimized so it doesn't use unnesesary network packets.
 - Item Database -- there is an database implemented, thanks to it the bot is collecting information about the drop rate of every location visited by the bot.
 - Command system -- the bot can be used without a need to direct interference the game.
-
+- TDD -- the project was regulary tested and it was a debug option implemented in the bot.
 
 # Discord bot commands
 '''

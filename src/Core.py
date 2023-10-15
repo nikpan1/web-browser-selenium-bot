@@ -148,8 +148,8 @@ class Schedule:
             self.st.have_item()
     
 
-    def other_events(self):     # @TODO big refactor - take the ctx once, and pass it to the st. functions
-        if self.st.is_end_pa():     # what if loc uses 6 PA @TODO 
+    def other_events(self):    
+        if self.st.is_end_pa():    
             self.actions.drink_oak()
 
         self.manage_elm()
@@ -218,10 +218,9 @@ class Schedule:
             # skip
             pass 
         else:
-            pass
-            #print("found new event!")
-            #self.wait_request = True
-            #self.wait_img_buffor = make_screenshot(self.driver) 
+            print("found new event!")
+            self.wait_request = True
+            self.wait_img_buffor = make_screenshot(self.driver) 
     
     def manage_elm(self):
         progress = self.elm.get_progress()
@@ -243,7 +242,7 @@ class Schedule:
             self.elm_status = progress
 
             quest_loc = self.elm.get_daily_quest_info(self.loc)
-            if quest_loc == "none":                                                 # is it working?
+            if quest_loc == "none":                                          
                 self.FIGHT_LOCATION = self.DEFAULT_FIGHT_LOCATION  
             else:
                 # check if there is an item to give else:
@@ -262,7 +261,7 @@ class Schedule:
         else:
             self.other_events()
 
-    def rezerwa_info(self): # @TODO przenieść do Statements
+    def rezerwa_info(self):
         amount = self.driver.find_element(By.XPATH, "//span[@class='rezerwa-count']")
         self.rezerwa_percentage = 100 * int(amount.text)/30
         return self.rezerwa_percentage
