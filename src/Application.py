@@ -11,12 +11,9 @@ from Core import Schedule
 from CoreSettings import *
 from Screenshooter import make_screenshot
 
-# @RTODO
-# kupować zaddania codzienne za ph
-# niech oddaje przedmiot z warsztatu jak możę
 
 class cmdPrompt:
-    def __init__(self, mode):  # @TODO modes: terminal | discord
+    def __init__(self, mode):  # modes: terminal | discord
         self.get_config()
         self.schedule = Schedule(self.login, self.password, True, True, True, True, True)
 
