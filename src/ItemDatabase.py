@@ -27,7 +27,6 @@ class ItemDatabase:
         self.database.to_csv(self.file_path, index=False)
 
     def db_append(self, item, amount, loc):
-        return
         # Check if the item already exists in the database
         if item in self.database['item_name'].values:
             item_index = self.database.index[self.database['item_name'] == item][0]
